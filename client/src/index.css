@@ -406,6 +406,97 @@ footer {
   color: white;
 }
 
+/* Tela de Versão */
+.versao-hero {
+  text-align: center;
+}
+
+.versao-hero .about-subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.versao-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.versao-status-badge.versao-status--online {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--accent-success);
+  border: 1px solid var(--accent-success);
+}
+
+.versao-status-badge.versao-status--offline {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-danger);
+  border: 1px solid var(--accent-danger);
+}
+
+.versao-status-badge.versao-status--checking {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid #f59e0b;
+}
+
+.versao-status-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.versao-env-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.versao-env-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.versao-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  line-height: 1.4;
+}
+
+.versao-endpoint {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  word-break: break-all;
+  margin-top: 0.5rem;
+}
+
+.versao-actions {
+  margin-top: 1.5rem;
+}
+
+.versao-actions .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Links Cards */
 .dados-henrylle {
   margin-top: 2rem;
