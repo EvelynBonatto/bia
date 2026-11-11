@@ -8,6 +8,55 @@ Implementar uma tela dedicada no frontend do projeto BIA para exibir as informa�
 
 ---
 
+## Informações de Workflow
+
+- **Modelo:** Feature/branch — cada task possui seu próprio branch
+- **Branch base:** `ia-main` (a task SEMPRE deriva deste branch)
+- **Agent responsável pelo início:** `dev` (.kiro/agents/dev.json)
+- **Fluxo do agent:**
+  1. Verificar se está no branch `ia-main`. Caso não esteja, informar e perguntar se pode retornar antes de iniciar
+  2. Mover a task para `.kiro/tasks/doing/`
+  3. Fazer commit e push no branch `ia-main` (task + sequencial)
+  4. Criar o branch da task a partir de `ia-main`
+  5. Implementar a funcionalidade
+
+---
+
+## Checklist de Atividades (Agent dev)
+
+> Marcar cada item com `[x]` à medida que for concluído durante a implementação.
+
+- [x] Confirmar que está no branch `ia-main` antes de iniciar
+- [x] Mover a task para `.kiro/tasks/doing/`
+- [x] Fazer commit e push no branch `ia-main` (task + sequencial)
+- [x] Criar o branch da task a partir de `ia-main`
+- [x] Criar componente `client/src/components/Versao.jsx` seguindo o padrão de `Tasks.jsx` e `About.jsx`
+- [x] Adicionar a rota `/versao` no React Router (`App.jsx`)
+- [x] Adicionar link de navegação para `/versao` no `Header.jsx`
+- [x] Implementar requisição GET para `/api/versao` com tratamento de erro
+- [x] Implementar estados de loading, sucesso e erro
+- [x] Garantir layout consistente com o restante da aplicação (sem CSS externo adicional)
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** para encerramento
+
+---
+
+## Finalização (Agent PO)
+
+> Esta etapa é executada **apenas pelo PO** após os agentes concluírem a implementação.
+
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada
+  - [x] Mover a task para `.kiro/tasks/done/`
+  - [x] Fazer commit e push final no repositório remoto
+
+---
+
 ## Contexto
 
 Atualmente, a rota `/api/versao` já existe no backend e retorna uma string com a versão da aplicação (ex: `"Bia 4.2.0"`). Essa informação é consumida de forma secundária pelo componente `VersionInfo.jsx`, que exibe um tooltip no header.
@@ -107,6 +156,9 @@ Then deve ser redirecionado para a página inicial (/)
 - [x] Layout consistente com o restante da aplicação (sem CSS externo adicional)
 - [x] Aplicação buildando sem erros
 - [x] Tela acessível via navegação e via URL direta
+- [x] Deploy local validado com `docker compose down && docker compose build && docker compose up -d`
+- [x] Rota `/api/versao` respondendo corretamente após deploy
+- [x] Task revisada e encerrada pelo PO
 
 ---
 

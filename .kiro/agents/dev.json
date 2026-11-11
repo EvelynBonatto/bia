@@ -5,12 +5,13 @@
   "mcpServers": {},
   "tools": ["*"],
   "toolAliases": {},
-  "allowedTools": ["fs_read", "fs_write"],
+  "allowedTools": ["fs_read", "fs_write", "execute_bash"],
   "resources": [
     "file://README.md",
     "file://AmazonQ.md",
     "file://.kiro/agents/dev/**/*.md",
-    "file://.kiro/rules/**/*.md"
+    "file://.kiro/rules/**/*.md",
+    "file://.kiro/tasks/**/*.md"
   ],
   "hooks": {},
   "toolsSettings": {},
