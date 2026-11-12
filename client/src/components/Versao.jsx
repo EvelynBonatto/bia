@@ -79,53 +79,6 @@ const Versao = () => {
     }
   };
 
-  const getEnvironmentInfo = () => {
-    const { protocol, hostname, port } = window.location;
-
-    if (hostname === "localhost" || hostname === "127.0.0.1") {
-      return {
-        icon: "🏠",
-        label: "Local",
-        description: `${hostname}:${port}`,
-        color: "#3b82f6",
-      };
-    }
-
-    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname) && protocol === "http:") {
-      return {
-        icon: "🌐",
-        label: "IP Direto",
-        description: `${hostname}${port ? ":" + port : ""}`,
-        color: "#f59e0b",
-      };
-    }
-
-    if (protocol === "http:" && hostname.includes(".elb.")) {
-      return {
-        icon: "⚖️",
-        label: "ALB HTTP",
-        description: hostname,
-        color: "#ef4444",
-      };
-    }
-
-    if (protocol === "https:") {
-      return {
-        icon: "🔒",
-        label: "Produção",
-        description: hostname,
-        color: "#22c55e",
-      };
-    }
-
-    return {
-      icon: "❓",
-      label: "Outro",
-      description: `${hostname}${port ? ":" + port : ""}`,
-      color: "#6b7280",
-    };
-  };
-
   const formatTime = (date) => {
     if (!date) return "--";
     return date.toLocaleTimeString("pt-BR", {
@@ -134,8 +87,6 @@ const Versao = () => {
       second: "2-digit",
     });
   };
-
-  const env = getEnvironmentInfo();
 
   return (
     <div className="about-page versao-page">
@@ -163,22 +114,6 @@ const Versao = () => {
             {lastCheck && (
               <p className="versao-meta">Última verificação: {formatTime(lastCheck)}</p>
             )}
-          </div>
-
-          {/* Ambiente detectado */}
-          <div className="feature-card">
-            <h3>Ambiente</h3>
-            <div className="versao-env-badge" style={{ color: env.color }}>
-              <span className="versao-env-icon">{env.icon}</span>
-              <span>{env.label}</span>
-            </div>
-            <p className="versao-meta">{env.description}</p>
-          </div>
-
-          {/* Endpoint da API */}
-          <div className="feature-card">
-            <h3>Endpoint da API</h3>
-            <p className="versao-endpoint">{apiUrl}/api/versao</p>
           </div>
         </div>
 

@@ -28,18 +28,18 @@ Simplificar a tela de versão mantendo apenas dois cards: **Versão da API** e *
 
 - [x] Confirmar que está no branch `ia-main` antes de iniciar
 - [x] Mover a task para `.kiro/tasks/doing/`
-- [ ] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Criar o branch da task a partir de `ia-main`
-- [ ] Remover o card "Ambiente" do JSX no `Versao.jsx` (bloco com `getEnvironmentInfo`)
-- [ ] Remover o card "Endpoint da API" do JSX no `Versao.jsx`
-- [ ] Remover a função `getEnvironmentInfo` e a constante `env` do `Versao.jsx` (código morto)
-- [ ] Manter o card "Versão da API" (hero) intacto
-- [ ] Manter o card "Status da Conexão" intacto (com ícone, badge e última verificação)
-- [ ] Manter os botões de ação (Atualizar / Tentar novamente) intactos
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
-- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** para encerramento
+- [x] Fazer commit e push no branch `ia-main` (task + sequencial)
+- [x] Criar o branch da task a partir de `ia-main`
+- [x] Remover o card "Ambiente" do JSX no `Versao.jsx` (bloco com `getEnvironmentInfo`)
+- [x] Remover o card "Endpoint da API" do JSX no `Versao.jsx`
+- [x] Remover a função `getEnvironmentInfo` e a constante `env` do `Versao.jsx` (código morto)
+- [x] Manter o card "Versão da API" (hero) intacto
+- [x] Manter o card "Status da Conexão" intacto (com ícone, badge e última verificação)
+- [x] Manter os botões de ação (Atualizar / Tentar novamente) intactos
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** para encerramento
 
 ---
 
