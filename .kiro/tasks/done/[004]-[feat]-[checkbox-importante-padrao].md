@@ -43,13 +43,13 @@ Alterar o checkbox "Importante" no formulário de adição de tarefas para que v
 
 > Esta etapa é executada **apenas pelo PO** após os agentes concluírem a implementação.
 
-- [ ] Verificar se tudo foi implementado conforme o escopo técnico
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
-- [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada
-  - [ ] Mover a task para `.kiro/tasks/done/`
-  - [ ] Fazer commit e push final no repositório remoto
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada
+  - [x] Mover a task para `.kiro/tasks/done/`
+  - [x] Fazer commit e push final no repositório remoto
 
 ---
 
@@ -142,13 +142,13 @@ And deve aparecer destacada na lista de tarefas (com indicador de importante)
 - [x] Sem dependências externas bloqueantes
 
 ## Definition of Done
-- [ ] Estado inicial de `importante` alterado para `true` no `AddTask.jsx`
-- [ ] Reset pós-submit alterado para `true` no `AddTask.jsx`
-- [ ] Checkbox aparece marcado ao carregar a tela
-- [ ] Checkbox volta marcado após adicionar uma tarefa
-- [ ] Toggle manual continua funcionando (marcar/desmarcar)
-- [ ] Tarefa criada com `importante: true` reflete na lista (destaque visual)
-- [ ] Aplicação buildando sem erros
-- [ ] Deploy local validado com `docker compose down && docker compose build && docker compose up -d`
-- [ ] Rota `/api/versao` respondendo corretamente após deploy
-- [ ] Task revisada e encerrada pelo PO
+- [x] Estado inicial de `importante` alterado para `true` no `AddTask.jsx`
+- [x] Reset pós-submit alterado para `true` no `AddTask.jsx`
+- [x] Checkbox aparece marcado ao carregar a tela
+- [x] Checkbox volta marcado após adicionar uma tarefa
+- [x] Toggle manual continua funcionando (marcar/desmarcar)
+- [x] Tarefa criada com `importante: true` reflete na lista (destaque visual)
+- [x] Aplicação buildando sem erros
+- [x] Deploy local validado com `docker compose down && docker compose build && docker compose up -d`
+- [x] Rota `/api/versao` respondendo corretamente após deploy
+- [x] Task revisada e encerrada pelo PO
