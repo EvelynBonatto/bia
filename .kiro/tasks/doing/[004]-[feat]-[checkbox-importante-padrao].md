@@ -28,14 +28,14 @@ Alterar o checkbox "Importante" no formulário de adição de tarefas para que v
 
 - [x] Confirmar que está no branch `ia-main` antes de iniciar
 - [x] Mover a task para `.kiro/tasks/doing/`
-- [ ] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Criar o branch da task a partir de `ia-main`
-- [ ] Alterar o estado inicial de `importante` de `useState(false)` para `useState(true)` no `AddTask.jsx` (linha 7)
-- [ ] Alterar o reset de `importante` após submit de `setImportante(false)` para `setImportante(true)` no `AddTask.jsx` (linha 26)
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
-- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** para encerramento
+- [x] Fazer commit e push no branch `ia-main` (task + sequencial)
+- [x] Criar o branch da task a partir de `ia-main`
+- [x] Alterar o estado inicial de `importante` de `useState(false)` para `useState(true)` no `AddTask.jsx` (linha 7)
+- [x] Alterar o reset de `importante` após submit de `setImportante(false)` para `setImportante(true)` no `AddTask.jsx` (linha 26)
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** para encerramento
 
 ---
 
