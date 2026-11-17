@@ -33,7 +33,7 @@ Como **aluno da Formação AWS**, quero **acessar uma tela no BIA que mostre a v
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -85,7 +85,60 @@ pronta para aceite
 
 ## Validação QA
 
-_(preenchido pelo QA)_
+**Branch/commit validado:** `feat/001-tela-versao` @ `81bdd76` — containers `bia`, `database` e `redis` rodando via `docker compose`.
+
+**Como foi validado:** teste E2E em navegador real (Firefox headless controlado por WebDriver/`geckodriver`), clicando e lendo o DOM renderizado pelo React — não só o HTML estático devolvido pelo `curl`.
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Acesso pela rota | ✅ | `GET http://localhost:3001/versao` no navegador → card com `h3` = `Versão` e `h4` = `Bia 4.3.0`, idêntico a `curl -s http://localhost:3001/api/versao` → `Bia 4.3.0` |
+| 2 | Acesso pelo menu | ✅ | Clique no link `Versão` do `<header>` a partir de `/`, `/about` e da própria `/versao` → URL final `http://localhost:3001/versao` e título `Versão` nas três telas |
+| 3 | Versão igual à do projeto | ✅ | Tela exibe `Bia 4.3.0`; `node -p "require('./package.json').version"` → `4.3.0` |
+| 4 | API indisponível | ✅ | Falha simulada (ver abaixo): a tela mostra `Não foi possível obter a versão da API`; título `Versão`, cabeçalho e botão `← Voltar` continuam renderizados (sem tela branca). O `VersionInfo` mostra 🔴 offline, coerente com o cenário |
+| 5 | Sem regressão | ✅ | `/`: `h1` `BIA`, formulário de nova tarefa e lista/empty-state renderizados; `VersionInfo` passa de `checking` para `online` e o tooltip mostra `Bia 4.3.0`. `/about`: conteúdo, `VersionInfo` e botão voltar presentes. `curl` em `/`, `/about`, `/versao` e `/api/tarefas` → HTTP 200 |
+
+**Como o critério 4 foi simulado (reproduzível):**
+
+```bash
+# 1. Build do front apontando para uma API inalcançável (porta 9 não tem nada escutando)
+cd client && VITE_API_URL=http://localhost:9 npx vite build --outDir /tmp/build-api-off --emptyOutDir
+curl -s -m 2 http://localhost:9/api/versao   # exit 7 (conexão recusada) = API fora do ar
+
+# 2. Servir esse build (com fallback de SPA) em outra porta
+npx vite preview --outDir /tmp/build-api-off --port 4173
+
+# 3. Abrir http://localhost:4173/versao no navegador
+```
+
+Resultado no DOM: `{"h3":"Versão","p":"Não foi possível obter a versão da API","header":true,"voltar":true}`.
+
+**Saída do teste E2E:**
+
+```
+PASS - C1 titulo 'Versão' na tela /versao
+PASS - C1 texto exibido == /api/versao ('Bia 4.3.0')
+PASS - C3 versão exibida corresponde ao package.json (4.3.0)
+PASS - C2 link 'Versão' a partir de /
+PASS - C2 link 'Versão' a partir de /about
+PASS - C2 link 'Versão' a partir de /versao
+PASS - C5 / renderiza cabeçalho, formulário e lista/empty-state
+PASS - C5 VersionInfo online e tooltip mostra a versão da API
+PASS - C5 /about renderiza conteúdo, VersionInfo e botão voltar
+PASS - C4 mensagem de erro exibida
+PASS - C4 tela não quebra (título, cabeçalho e botão voltar presentes)
+PASS - C4 VersionInfo indica API offline (coerente)
+```
+
+**Testes unitários:** `docker compose exec -T server npm test` → `Test Suites: 2 passed, 2 total` / `Tests: 16 passed, 16 total`.
+Nenhum teste unitário novo: a suíte Jest do projeto (`tests/unit/`) cobre só o backend em CommonJS; testar o componente React com Jest exigiria configurar Babel/jsdom e tratar `import.meta.env`, o que foge da simplicidade do projeto. Por isso a validação do front foi feita em navegador real.
+
+**Observações (não bloqueiam o aceite):**
+- A versão retornada por `/api/versao` está fixa em `api/controllers/versao.js` (`"4.3.0"`, ou `VERSAO_API`), não é lida do `package.json`. Hoje bate com o `package.json`, mas se só o `package.json` for atualizado, o critério 3 deixa de valer. Fora do escopo desta task (backend não foi alterado); fica como sugestão de task futura.
+- O link `Versão` no cabeçalho usa a classe CSS `footer-link`. Funciona, só vale considerar uma classe própria do header se o estilo precisar mudar.
+
+## Bugs
+
+Nenhum bug encontrado.
 
 ## Finalização (PO)
 
