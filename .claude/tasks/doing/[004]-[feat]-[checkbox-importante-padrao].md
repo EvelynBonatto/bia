@@ -33,7 +33,7 @@ Como **usuário da BIA**, quero **que o checkbox "Importante" já venha marcado 
 
 ## Status
 
-aberta
+pronta para aceite
 
 ---
 
@@ -55,15 +55,29 @@ aberta
 - [x] Confirmar que está no branch `ia-main` antes de iniciar
 - [x] Mover a task para `.claude/tasks/doing/`
 - [x] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Criar o branch `feat/004-checkbox-importante-padrao` a partir de `ia-main`
-- [ ] Deixar o checkbox "Importante" marcado por padrão no formulário de cadastro
-- [ ] Manter o checkbox marcado ao limpar o formulário após o cadastro
-- [ ] Garantir que o usuário ainda consegue desmarcar o checkbox
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
-- [ ] Mudar o status para `pronta para aceite`
-- [ ] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+- [x] Criar o branch `feat/004-checkbox-importante-padrao` a partir de `ia-main`
+- [x] Deixar o checkbox "Importante" marcado por padrão no formulário de cadastro
+- [x] Manter o checkbox marcado ao limpar o formulário após o cadastro
+- [x] Garantir que o usuário ainda consegue desmarcar o checkbox
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Mudar o status para `pronta para aceite`
+- [x] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+
+## Implementação (Dev)
+
+**Arquivo alterado:** `client/src/components/AddTask.jsx`
+- Estado inicial do checkbox: `useState(false)` → `useState(true)` (marcado ao abrir o formulário).
+- Limpeza após o cadastro: `setImportante(false)` → `setImportante(true)` (volta marcado).
+- O `onChange` do checkbox não mudou, então o usuário continua podendo desmarcar. Campos "Tarefa" e "Data/Prazo" seguem iniciando vazios e a validação de campo obrigatório (modal) não foi alterada. Nenhuma mudança em listagem, edição, exclusão ou backend.
+
+**Evidências:**
+- Deploy local (`docker compose down && docker compose build && docker compose up -d`) concluído sem erros; `vite build`: `✓ 58 modules transformed` / `✓ built in 1.20s`.
+- `curl -s http://localhost:3001/api/versao` → `Bia 4.3.0`.
+- Bundle gerado (`client/build/assets/index-*.js`) contém o estado do checkbox como `useState(!0)` (true).
+- `POST /api/tarefas` com `importante: true` (payload que o formulário envia sem mexer no checkbox) → criado com `"importante":true`; registro de teste removido em seguida (`DELETE` → 200).
+- `npm test` (no container `server`): 2 suites, 16 testes passando.
 
 ## Validação QA
 
