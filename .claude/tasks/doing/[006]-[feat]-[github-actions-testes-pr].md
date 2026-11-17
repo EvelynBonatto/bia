@@ -49,7 +49,7 @@ Como **aluna da Formação AWS que entrega tasks por PR**, quero **que os testes
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -75,16 +75,16 @@ pronta para aceite
 
 > **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 
-- [ ] Confirmar que está no branch da task (`git branch --show-current`)
-- [ ] Validar cada critério de aceite (Given/When/Then) com evidência objetiva (IDs/links das execuções no GitHub)
-- [ ] Para o critério 3, provocar uma falha de forma temporária e desfazê-la em seguida, sem deixar alteração em `tests/` ou `api/` no branch ao final
-- [ ] Rodar a suíte de testes e registrar o resultado
-- [ ] Remover os dados de teste criados durante a validação (branches/PRs temporários, commits de falha)
-- [ ] Testes no navegador: usar o navegador em container (`qa-browser`, ver `qa.md`) e encerrá-lo com `docker stop qa-browser` ao final, junto com qualquer servidor temporário
-- [ ] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
-- [ ] Mudar o status para `validada pelo QA` ou `com bugs`
-- [ ] Fazer commit e push no branch da task
-- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+- [x] Confirmar que está no branch da task (`git branch --show-current`)
+- [x] Validar cada critério de aceite (Given/When/Then) com evidência objetiva (IDs/links das execuções no GitHub)
+- [x] Para o critério 3, provocar uma falha de forma temporária e desfazê-la em seguida, sem deixar alteração em `tests/` ou `api/` no branch ao final
+- [x] Rodar a suíte de testes e registrar o resultado
+- [x] Remover os dados de teste criados durante a validação (branches/PRs temporários, commits de falha)
+- [x] Testes no navegador: usar o navegador em container (`qa-browser`, ver `qa.md`) e encerrá-lo com `docker stop qa-browser` ao final, junto com qualquer servidor temporário — **não aplicável**: a task não altera UI (só `.github/workflows/`); `qa-browser` não foi iniciado e nenhum servidor temporário foi criado
+- [x] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
+- [x] Mudar o status para `validada pelo QA` ou `com bugs`
+- [x] Fazer commit e push no branch da task
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
 
 ## Implementação (DevOps)
 
@@ -106,11 +106,27 @@ pronta para aceite
 
 ## Validação QA
 
-_(preenchido pelo QA)_
+Validado no branch `feat/006-github-actions-testes-pr` (HEAD `2371ae9`), PR oficial #6 (aberto, sem merge).
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Executa em PR contra ia-main (abertura e novo push) | ✅ | PR #6 (`feat/006-...` → `ia-main`) disparou 2 execuções `pull_request`: run [44175043004](https://github.com/EvelynBonatto/bia/actions/runs/44175043004) na abertura (head `067f470`) e run [44175203014](https://github.com/EvelynBonatto/bia/actions/runs/44175203014) no novo push (head `2371ae9`). Ambas executam o step `Executar os testes` → `npm test` |
+| 2 | Resultado visível no PR (sucesso) | ✅ | `gh pr checks 6` → `testes pass 17s` (run 44175203014). Log: `PASS tests/unit/controllers/versao.test.js`, `PASS tests/unit/controllers/tarefas.test.js`, `Test Suites: 2 passed, 2 total`, `Tests: 16 passed, 16 total` |
+| 3 | Resultado visível no PR (falha) | ✅ | Branch descartável `qa/006-teste-falha` (derivado do branch da task) com a expectativa de `versao.test.js` alterada para `Bia 9.9.9-QA-FALHA`; PR descartável #7 contra `ia-main`. Run [44176039244](https://github.com/EvelynBonatto/bia/actions/runs/44176039244) → `failure`; `gh pr checks 7` → `testes fail 29s`. Log aponta o teste: `FAIL tests/unit/controllers/versao.test.js`, `● Versao Controller › get deve retornar a string de resposta correta`, `Expected: "Bia 9.9.9-QA-FALHA"` / `Received: "Bia 4.3.0"`, `Tests: 1 failed, 15 passed, 16 total`, `Process completed with exit code 1`. PR #7 fechado e branch apagado (local e remoto); nada foi para o branch da task |
+| 4 | Não executa fora do escopo | ✅ | Branch base temporário `qa/006-base-temp` + PR descartável #8 (`qa/006-fora-escopo` → `qa/006-base-temp`), aberto em 21:05:07Z. Nenhuma execução: `gh pr checks 8` → `no checks reported`, `statusCheckRollup: []`, API `actions/runs?branch=qa/006-fora-escopo` → `total_count: 0` (conferido em 21:06:06Z). Para comparação, o PR #7 contra `ia-main` (aberto em 21:04:57Z) teve a execução criada em 21:05:01Z (4 s depois). PR #8 fechado e os 3 branches temporários apagados |
+| 5 | Simples e seguro | ✅ | Leitura de `.github/workflows/testes-pr.yml`: gatilho `pull_request` com `branches: [ia-main]`; `actions/setup-node@v4` com `node-version: 24` (mesmo major do `Dockerfile`; runner usou `24.22.2`); `npm ci` + `npm test`; sem `secrets`, sem `env` e sem credenciais/ações AWS. `git diff --stat ia-main -- tests api package.json` → vazio (nenhuma alteração nesses caminhos) |
+
+**Suíte local:** `docker compose exec -T server npm test` → `Test Suites: 2 passed, 2 total` / `Tests: 16 passed, 16 total`.
+
+**Teste no navegador:** não aplicável (sem mudança de UI).
+
+**Limpeza:** PRs descartáveis #7 e #8 fechados (sem merge); branches `qa/006-teste-falha`, `qa/006-fora-escopo` e `qa/006-base-temp` apagados no remoto, e os locais também. `gh pr list --state open` → só o PR #6. Branch da task sem alterações em `tests/` ou `api/`.
 
 ## Bugs
 
-_(preenchido pelo QA, se houver)_
+Nenhum bug encontrado.
+
+**Observação (não é bug):** o critério 4 foi verificado por ausência de execução numa janela de ~60 s, contra um disparo de 4 s no PR contra `ia-main`; além disso, o filtro `branches: [ia-main]` do gatilho confirma o comportamento por leitura do arquivo.
 
 ## Finalização (PO)
 
