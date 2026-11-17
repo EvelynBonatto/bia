@@ -33,7 +33,7 @@ Como **usuário da BIA**, quero **que o checkbox "Importante" já venha marcado 
 
 ## Status
 
-validada pelo QA
+aceita
 
 ---
 
@@ -99,16 +99,26 @@ validada pelo QA
 
 ## Finalização (PO)
 
-- [ ] Verificar se tudo foi implementado conforme o escopo
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se `com bugs`, devolver ao Dev)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, status `recusada` com motivo e devolver ao Dev
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
-- [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada e **aguardar o OK**
-  - [ ] Após o OK, confirmar que está no branch `feat/004-checkbox-importante-padrao`
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
-  - [ ] Fazer commit e push final no branch da task
-  - [ ] Confirmar com `git branch --show-current` que está em `feat/004-checkbox-importante-padrao`
-  - [ ] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[004] - feat: checkbox importante marcado por padrão`
-  - [ ] Enviar ao usuário o link do PR
+- [x] Verificar se tudo foi implementado conforme o escopo
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se `com bugs`, devolver ao Dev)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, status `recusada` com motivo e devolver ao Dev
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada e **aguardar o OK**
+  - [x] Após o OK, confirmar que está no branch `feat/004-checkbox-importante-padrao`
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
+  - [x] Fazer commit e push final no branch da task
+  - [x] Confirmar com `git branch --show-current` que está em `feat/004-checkbox-importante-padrao`
+  - [x] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[004] - feat: checkbox importante marcado por padrão`
+  - [x] Enviar ao usuário o link do PR
+
+**Aceite do PO:**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Checkbox marcado ao abrir o formulário | ✅ | `useState(true)` em `AddTask.jsx`; captura do QA mostra o checkbox marcado ao abrir |
+| 2 | Tarefa salva como importante por padrão | ✅ | Tarefa criada sem mexer no checkbox: estrela cheia e `"importante": true` na API |
+| 3 | Usuário pode desmarcar | ✅ | Com o checkbox desmarcado: estrela vazia e `"importante": false` na API |
+| 4 | Formulário volta com o checkbox marcado após cadastrar | ✅ | `setImportante(true)` após o cadastro; QA confirmou nos dois cenários |
+| 5 | Apenas o checkbox muda | ✅ | Diff de 2 linhas; campos vazios, modal de campo obrigatório, listagem, edição e exclusão inalterados; 16 testes passando |
