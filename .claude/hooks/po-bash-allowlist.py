@@ -13,10 +13,12 @@ PERMITIDOS = {
     ("git", "add"), ("git", "commit"), ("git", "push"), ("git", "checkout"),
     ("git", "status"), ("git", "branch"), ("git", "log"), ("git", "worktree"),
     ("git", "mv"), ("git", "diff"),          # exigidos pela especificacao.md
+    ("git", "pull"), ("git", "fetch"),       # atualizar ia-main após o merge
     ("gh", "pr"),                            # subcomando checado abaixo
     ("ls", None),                            # conferir doing/ e done/
 }
-GH_PR_PERMITIDOS = {"create", "list", "view"}
+GH_PR_PERMITIDOS = {"create", "list", "view", "merge"}
+REPO_FORK = "EvelynBonatto/bia"
 BRANCHES_PROTEGIDOS = {"main", "ia-main"}
 # Subagents acionados pelo PO: o hook do PO não vale para eles
 SUBAGENTS_LIBERADOS = {"dev", "qa", "devops"}
@@ -79,7 +81,26 @@ def main():
         bloquear("--output grava arquivos fora de .claude/")
 
     if prog == "gh" and (not args or args[0] not in GH_PR_PERMITIDOS):
-        bloquear("só 'gh pr create', 'gh pr list' e 'gh pr view' são permitidos")
+        bloquear("só 'gh pr create', 'gh pr list', 'gh pr view' e 'gh pr merge' são permitidos")
+
+    if prog == "gh" and args[0] == "merge":
+        # Merge só com squash, só no fork, sem passar por cima das proteções do GitHub
+        if "--squash" not in args and "-s" not in args:
+            bloquear("o merge do PO deve ser sempre com --squash")
+        if any(a in ("--merge", "-m", "--rebase", "-r", "--admin") for a in args):
+            bloquear("merge commit, rebase e --admin não são permitidos ao PO")
+        repo = None
+        for i, a in enumerate(args):
+            if a in ("--repo", "-R") and i + 1 < len(args):
+                repo = args[i + 1]
+            elif a.startswith("--repo="):
+                repo = a.split("=", 1)[1]
+        if repo != REPO_FORK:
+            bloquear(f"o merge deve informar --repo {REPO_FORK}")
+
+    if prog == "git" and sub == "pull":
+        if any(a.startswith("--force") or a in ("-f", "--rebase", "-r") for a in args):
+            bloquear("git pull do PO só pode ser fast-forward simples")
 
     if prog == "git" and sub == "push":
         if any(a in ("-f", "--force", "--force-with-lease", "--mirror", "--delete", "-d")

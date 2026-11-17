@@ -31,9 +31,22 @@ Onde:
 
 ---
 
+## Estrutura da Task (ordem das seções)
+
+Toda task deve seguir esta ordem, com o modelo de trabalho **no início**:
+
+1. **Título** (`# [NNN] - <tipo>: <resumo>`)
+2. **Informações de Workflow** (logo após o título, antes de qualquer outra seção)
+3. **História de usuário**
+4. **Critérios de aceite**
+5. **Status**
+6. **Checklist de Atividades** do agent responsável (`Dev` ou `DevOps`)
+7. **Checklist de Atividades (QA)** + seção **Validação QA**
+8. **Finalização (PO)**
+
 ## Informações de Workflow
 
-Toda task criada deve conter uma seção de **Informações de Workflow** com as seguintes informações:
+Toda task criada deve conter, **logo após o título**, uma seção de **Informações de Workflow** com as seguintes informações:
 
 - **Modelo:** Feature/branch — cada task possui seu próprio branch
 - **Branch base:** `ia-main` (a task SEMPRE deriva deste branch)
@@ -45,6 +58,9 @@ Toda task criada deve conter uma seção de **Informações de Workflow** com as
   3. Fazer commit e push no branch `ia-main` (task + sequencial)
   4. Criar o branch da task a partir de `ia-main`, seguindo o padrão `<tipo>/<NNN>-<resumo>`
   5. Implementar a funcionalidade
+- **Encerramento:** somente o **PO** finaliza a task e a move para `.claude/tasks/done/`. Nenhum outro agent faz isso. Ao concluir sua parte, cada agent deve avisar que a task precisa ser passada adiante (Dev/DevOps → QA → PO).
+
+> Essa frase de **Encerramento** deve aparecer **literalmente** em toda task.
 
 ## Escolha do Agent Responsável
 
@@ -87,9 +103,13 @@ O nome é derivado diretamente do arquivo da task `[NNN]-[tipo]-[resumo].md`:
 
 ## Checklist de Atividades (Agent responsável)
 
-Toda task deve conter um checklist para o agent responsável (`dev` ou `devops`) marcar `[x]` conforme conclui cada etapa. É **obrigatório** que o agent marque as atividades **à medida que forem concluídas**, ou seja, durante o processo de implementação — e não apenas ao final.
+Toda task deve conter um checklist para **cada agent** que atua nela: o responsável (`dev` ou `devops`), o `qa` e o PO (seção **Finalização**). É **obrigatório** que cada agent marque as atividades **à medida que forem concluídas**, ou seja, durante o processo de implementação/validação — e não apenas ao final.
 
-O checklist deve incluir no mínimo:
+Todo checklist (Dev/DevOps e QA) deve começar com esta linha, **literalmente**:
+
+> **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
+
+O checklist do agent responsável deve incluir no mínimo:
 
 - [ ] Confirmar que está no branch `ia-main` antes de iniciar
 - [ ] Mover a task para `.claude/tasks/doing/`
@@ -102,7 +122,21 @@ O checklist deve incluir no mínimo:
 - [ ] (Tasks de `.github/workflows/`) Validar a execução do workflow no GitHub (`gh run list` / `gh run view`)
 - [ ] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
 
-> **Importante:** Quando os agentes concluírem a implementação, eles devem avisar explicitamente que a task precisa ser validada pelo **QA** e passada para o **PO** para que possa ser encerrada.
+## Checklist de Atividades (QA)
+
+Toda task deve conter um checklist para o `qa`, logo antes da seção **Validação QA**, com no mínimo:
+
+- [ ] Confirmar que está no branch da task (`git branch --show-current`)
+- [ ] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
+- [ ] Rodar a suíte de testes e registrar o resultado
+- [ ] Remover os dados de teste criados durante a validação
+- [ ] Testes no navegador: usar o navegador em container (`qa-browser`, ver `qa.md`) e encerrá-lo com `docker stop qa-browser` ao final, junto com qualquer servidor temporário
+- [ ] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
+- [ ] Mudar o status para `validada pelo QA` ou `com bugs`
+- [ ] Fazer commit e push no branch da task
+- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+
+> **Importante:** Quando os agentes concluírem sua parte, eles devem avisar explicitamente quem é o próximo: o agent responsável passa para o **QA**, e o **QA** passa para o **PO**, que é quem encerra a task.
 
 ## Finalização (Agent PO)
 
@@ -126,11 +160,12 @@ Toda task deve conter uma seção de Finalização executada apenas pelo PO apó
   - [ ] Após o OK, confirmar que está no branch da task (não em `ia-main` nem em `main`)
   - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/`
   - [ ] Fazer commit e push final no branch da task
-  - [ ] Antes de abrir o PR, confirmar com `git branch --show-current` que está no branch da feature e que o nome bate com a task (não pode ser `ia-main`)
-  - [ ] Abrir o Pull Request do branch da task contra `ia-main` (ver **Fluxo de Pull Request**)
-  - [ ] Enviar ao usuário o link do PR
+  - [ ] Abrir o Pull Request do branch da task contra `ia-main` (ver **Fluxo de Pull Request**). **Imediatamente antes do `gh pr create`:** rodar `git branch --show-current` e comparar com o nome do branch da task; se for `ia-main`, `main` ou outro nome, **parar, não abrir o PR e avisar o usuário**
+  - [ ] Fazer o merge do PR em `ia-main` com **squash** (ver **Merge e limpeza**)
+  - [ ] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
+  - [ ] Enviar ao usuário o link do PR e o commit do merge
 
-> **Importante:** o PO **não** move a task, **não** faz commit/push e **não** abre o PR sem o OK explícito do usuário após o aviso de finalização.
+> **Importante:** o PO **não** move a task, **não** faz commit/push, **não** abre o PR e **não** faz o merge sem o OK explícito do usuário após o aviso de finalização. O OK do aceite autoriza todas essas etapas de uma vez.
 
 ## Fluxo de Pull Request (Agent PO)
 
@@ -144,7 +179,7 @@ Após o OK do usuário, o **PO** é o responsável por abrir o Pull Request. O P
 - **Branch de destino (base):** **sempre** `ia-main`
   - **NUNCA** abrir PR contra `main` ou qualquer outro branch
 - **Título:** `[NNN] - <tipo>: <resumo da task>` (ex: `[005] - refactor: simplificar tela de versão`)
-- **Merge:** o PO **não** faz merge. O merge é feito pelo usuário após revisar o PR, **sempre** com **Squash and merge** (ver **Higiene de Commits**)
+- **Merge:** feito pelo **PO**, logo após abrir o PR, **sempre** com squash (ver **Merge e limpeza** e **Higiene de Commits**)
 - **Não duplicar:** antes de criar, verificar se já existe um PR aberto para o branch
 
 ### Corpo do PR
@@ -156,7 +191,8 @@ O corpo do PR deve conter:
 3. **Task:** caminho do arquivo da task em `.claude/tasks/done/`
 4. **Critérios de aceitação:** lista dos cenários atendidos
 5. **Validação:** confirmação do deploy local e da rota `/api/versao`
-6. **Rodapé de atribuição** do Claude Code
+
+> Sem rodapé de atribuição e sem menção a IA no corpo do PR.
 
 ### Comandos
 
@@ -186,11 +222,29 @@ gh pr view <numero> --repo EvelynBonatto/bia --json baseRefName,headRefName,url
 
 > **Segurança:** o `--repo EvelynBonatto/bia` é **obrigatório** em todos os comandos `gh`, mesmo com o fork configurado como repositório padrão (`gh repo set-default EvelynBonatto/bia`). As duas proteções juntas evitam abrir PR no `henrylle/bia` por engano. Se o passo 5 mostrar base diferente de `ia-main` ou outro repositório, fechar o PR imediatamente e avisar o usuário.
 
-### Após abrir o PR
+### Merge e limpeza
 
-- Informar ao usuário o link do PR
-- Orientar que o próximo passo é o usuário revisar e fazer o merge em `ia-main` usando **Squash and merge**
-- Após o merge, as próximas tasks continuam partindo de `ia-main` atualizado (`git pull` em `ia-main` antes de iniciar)
+Depois de conferir o PR (passo 5), o PO faz o merge e deixa o ambiente pronto para a próxima task:
+
+```bash
+# 6. Merge com squash no fork, apagando o branch remoto
+gh pr merge <numero> --repo EvelynBonatto/bia --squash --delete-branch
+
+# 7. Conferir que o PR foi integrado
+gh pr view <numero> --repo EvelynBonatto/bia --json state,mergeCommit
+
+# 8. Voltar para o ia-main e atualizar
+git checkout ia-main
+git pull
+git fetch --prune
+
+# 9. Apagar o branch local da task (se ainda existir)
+git branch -D <branch-da-task>
+```
+
+- O título do commit de squash é o título do PR (`[NNN] - <tipo>: <resumo>`), e o commit **não** deve ter `Co-Authored-By` nem menção a IA.
+- Se o merge falhar (conflito, checks pendentes ou bloqueio do GitHub), **não** usar `--admin` nem forçar: avisar o usuário com a mensagem de erro.
+- Ao final, informar ao usuário o link do PR e o commit do merge. As próximas tasks partem desse `ia-main` atualizado.
 
 ## Higiene de Commits
 
@@ -202,7 +256,8 @@ O histórico no GitHub deve conter apenas commits com **valor real**. Commits bo
 - Assim, cada task vira **um único commit** no `ia-main`, independentemente de quantos commits existam no branch da task
 - **Única exceção:** o commit de início da task (mover para `doing/` + `sequencial.md`, passo 3 do **Fluxo do agent responsável**) é feito direto no `ia-main` pelo agent responsável. Nenhum outro commit vai direto no `ia-main`
 - O título do commit de squash deve seguir o título do PR: `[NNN] - <tipo>: <resumo>`
-- Pelo terminal (quando o usuário pedir explicitamente): `gh pr merge <numero> --repo EvelynBonatto/bia --squash --delete-branch`
+- O merge é feito pelo PO após o OK do aceite: `gh pr merge <numero> --repo EvelynBonatto/bia --squash --delete-branch`. O repositório só permite squash (Settings → Pull Requests).
+- **Nenhum** commit (de nenhum agent) leva a linha `Co-Authored-By` nem menção a IA.
 
 ### O que NÃO commitar
 
