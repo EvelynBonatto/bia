@@ -60,12 +60,12 @@ aberta
 - [x] Confirmar que está no branch `ia-main` antes de iniciar
 - [x] Mover a task para `.claude/tasks/doing/`
 - [x] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Criar o branch `feat/006-github-actions-testes-pr` a partir de `ia-main`
-- [ ] Criar o workflow em `.github/workflows/` disparado por `pull_request` contra `ia-main`
-- [ ] Instalar dependências e executar `npm test` com Node.js 24
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
+- [x] Criar o branch `feat/006-github-actions-testes-pr` a partir de `ia-main`
+- [x] Criar o workflow em `.github/workflows/` disparado por `pull_request` contra `ia-main`
+- [x] Instalar dependências e executar `npm test` com Node.js 24
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
 - [ ] Validar a execução do workflow no GitHub (`gh run list` / `gh run view`), abrindo um PR de teste do branch da task contra `ia-main` se necessário (o PR oficial continua sendo aberto pelo PO; não fazer merge)
 - [ ] Registrar na task o que foi feito e as evidências (link/ID da execução)
 - [ ] Mudar o status para `pronta para aceite`
