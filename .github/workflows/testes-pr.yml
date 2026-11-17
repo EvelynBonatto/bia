@@ -1,0 +1,25 @@
+# Roda os testes unitarios da BIA em todo PR aberto contra o branch ia-main
+name: Testes da BIA
+
+on:
+  pull_request:
+    branches:
+      - ia-main
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js 24 (mesmo do Dockerfile)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Instalar dependencias
+        run: npm ci --loglevel=error
+
+      - name: Executar os testes
+        run: npm test
