@@ -49,7 +49,7 @@ Como **aluno da Formação AWS**, quero **ver na tela de versão se a aplicaçã
 
 ## Status
 
-aberta
+pronta para aceite
 
 ---
 
@@ -59,15 +59,35 @@ aberta
 
 - [x] Confirmar que está no branch `ia-main` antes de iniciar
 - [x] Mover a task para `.claude/tasks/doing/`
-- [ ] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Criar o branch `feat/005-status-conexao-api-tela-versao` a partir de `ia-main`
-- [ ] Exibir na tela `/versao` o status de conexão da API (verificando / online / offline)
-- [ ] Manter a mensagem de erro existente no cenário de API indisponível
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
-- [ ] Mudar o status para `pronta para aceite`
-- [ ] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+- [x] Fazer commit e push no branch `ia-main` (task + sequencial)
+- [x] Criar o branch `feat/005-status-conexao-api-tela-versao` a partir de `ia-main`
+- [x] Exibir na tela `/versao` o status de conexão da API (verificando / online / offline)
+- [x] Manter a mensagem de erro existente no cenário de API indisponível
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Mudar o status para `pronta para aceite`
+- [x] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+
+## Implementação (Dev)
+
+**Arquivo alterado:** `client/src/components/Versao.jsx` (somente frontend, sem novas dependências)
+
+- Novo estado `status` (`checking` / `online` / `offline`), começando em `checking`.
+- A verificação usa o mesmo critério do `VersionInfo` do cabeçalho: `GET /api/versao` com timeout de 5s (`AbortController`); resposta OK = online, erro, timeout ou resposta não OK = offline. Com isso, o status da tela é coerente com o indicador do cabeçalho.
+- Texto exibido abaixo da versão: "Verificando conexão..." → "🟢 API online" ou "🔴 API offline".
+- No cenário offline, a mensagem existente "Não foi possível obter a versão da API" foi mantida, sem quebrar a tela.
+- A verificação roda só ao abrir a tela (sem atualização periódica), como a task pede.
+
+**Evidências:**
+- Build do client (`npm run build` em `client/`): `✓ built in 1.55s`, sem erros.
+- Deploy local: `docker compose down && docker compose build && docker compose up -d` subiu os containers `bia`, `database` e `redis`.
+- `curl -s http://localhost:3001/api/versao` → `Bia 4.3.0`
+- Rotas do frontend: `/` 200, `/about` 200, `/versao` 200.
+- O bundle servido (`assets/index-B22yl77t.js`) contém "Verificando conexão...", "API online", "API offline" e "Não foi possível obter a versão da API".
+- Testes (`docker compose exec -T server npm test`, porque o host não tem `node_modules` na raiz): `Test Suites: 2 passed, Tests: 16 passed`.
+
+> Observação para o QA: o cenário offline pode ser simulado abrindo `/versao` e bloqueando `/api/versao` no navegador (ou parando o container depois de a página carregar e recarregando com o bundle em cache), porque o frontend é servido pelo mesmo container da API.
 
 ## Checklist de Atividades (QA)
 
