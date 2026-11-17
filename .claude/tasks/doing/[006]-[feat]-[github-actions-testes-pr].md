@@ -49,7 +49,7 @@ Como **aluna da Formação AWS que entrega tasks por PR**, quero **que os testes
 
 ## Status
 
-aberta
+pronta para aceite
 
 ---
 
@@ -66,10 +66,10 @@ aberta
 - [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
 - [x] Validar rota `/api/versao` respondendo corretamente
 - [x] Aplicação buildando sem erros
-- [ ] Validar a execução do workflow no GitHub (`gh run list` / `gh run view`), abrindo um PR de teste do branch da task contra `ia-main` se necessário (o PR oficial continua sendo aberto pelo PO; não fazer merge)
-- [ ] Registrar na task o que foi feito e as evidências (link/ID da execução)
-- [ ] Mudar o status para `pronta para aceite`
-- [ ] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+- [x] Validar a execução do workflow no GitHub (`gh run list` / `gh run view`), abrindo um PR de teste do branch da task contra `ia-main` se necessário (o PR oficial continua sendo aberto pelo PO; não fazer merge)
+- [x] Registrar na task o que foi feito e as evidências (link/ID da execução)
+- [x] Mudar o status para `pronta para aceite`
+- [x] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
 
 ## Checklist de Atividades (QA)
 
@@ -85,6 +85,24 @@ aberta
 - [ ] Mudar o status para `validada pelo QA` ou `com bugs`
 - [ ] Fazer commit e push no branch da task
 - [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+
+## Implementação (DevOps)
+
+**O que foi feito**
+- Criado `.github/workflows/testes-pr.yml` (workflow `Testes da BIA`):
+  - Gatilho: `pull_request` com `branches: [ia-main]` (eventos padrão `opened`, `synchronize`, `reopened`) — PRs contra outros branches não disparam (critério 4)
+  - Job `testes` em `ubuntu-latest`: `actions/checkout@v4` → `actions/setup-node@v4` com `node-version: 24` → `npm ci --loglevel=error` → `npm test`
+  - Sem credenciais AWS, sem `secrets`, sem alteração em `tests/`, `api/` ou `package.json`
+- Falha de qualquer teste faz o `jest` sair com código != 0, o step `Executar os testes` falha e o check fica ❌ com o teste falho no log (critério 3, a ser provocado pelo QA)
+
+**Evidências**
+- Testes locais com Node.js 24 (`node:24.18.0-slim`, `npm ci` + `npm test`): `Test Suites: 2 passed` / `Tests: 16 passed, 16 total`
+- Deploy local (`docker compose down && docker compose build && docker compose up -d`): build sem erros; `curl http://localhost:3001/api/versao` → `Bia 4.3.0`
+- PR de validação: https://github.com/EvelynBonatto/bia/pull/6 (contra `ia-main`, sem merge — reaproveitado pelo PO)
+- Execução do workflow: run `44175043004` — https://github.com/EvelynBonatto/bia/actions/runs/44175043004 — evento `pull_request`, `completed / success`, 24s
+  - Node usado: `24.22.2` (cache do runner)
+  - Log do step `Executar os testes`: `Test Suites: 2 passed, 2 total` / `Tests: 16 passed, 16 total`
+  - `gh pr checks 6`: `testes pass`
 
 ## Validação QA
 
