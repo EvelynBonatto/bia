@@ -49,7 +49,7 @@ Como **aluno da Formação AWS**, quero **ver na tela de versão se a aplicaçã
 
 ## Status
 
-validada pelo QA
+aceita
 
 ---
 
@@ -127,17 +127,27 @@ Nenhum bug encontrado.
 
 ## Finalização (PO)
 
-- [ ] Verificar se tudo foi implementado conforme o escopo técnico
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
-- [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
-  - [ ] Após o OK, confirmar que está no branch `feat/005-status-conexao-api-tela-versao` (não em `ia-main` nem em `main`)
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
-  - [ ] Fazer commit e push final no branch da task
-  - [ ] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[005] - feat: status de conexão da API na tela de versão` (rodar `git branch --show-current` imediatamente antes do `gh pr create`)
-  - [ ] Fazer o merge do PR em `ia-main` com **squash**
-  - [ ] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
-  - [ ] Enviar ao usuário o link do PR e o commit do merge
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
+  - [x] Após o OK, confirmar que está no branch `feat/005-status-conexao-api-tela-versao` (não em `ia-main` nem em `main`)
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
+  - [x] Fazer commit e push final no branch da task
+  - [x] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[005] - feat: status de conexão da API na tela de versão` (rodar `git branch --show-current` imediatamente antes do `gh pr create`)
+  - [x] Fazer o merge do PR em `ia-main` com **squash**
+  - [x] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
+  - [x] Enviar ao usuário o link do PR e o commit do merge
+
+**Aceite do PO:**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | API online | ✅ | `Versao.jsx` exibe "🟢 API online" com resposta OK; QA viu `Bia 4.3.0` + `🟢 API online` no navegador |
+| 2 | API offline | ✅ | `catch` exibe "🔴 API offline" + "Não foi possível obter a versão da API"; QA validou conexão recusada, HTTP 503 e timeout, sem quebrar a tela |
+| 3 | Verificação em andamento | ✅ | Estado inicial `checking` → "Verificando conexão..."; QA viu o texto com resposta atrasada |
+| 4 | Status coerente com o cabeçalho | ✅ | Mesmo critério do `VersionInfo` (timeout 5s, resposta OK); QA comparou tela × cabeçalho em todos os cenários |
+| 5 | Sem regressão | ✅ | `/`, `/about` e `/versao` funcionando, `VersionInfo` inalterado, 16 testes passando |
