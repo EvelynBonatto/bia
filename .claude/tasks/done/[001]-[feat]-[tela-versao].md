@@ -33,7 +33,7 @@ Como **aluno da Formação AWS**, quero **acessar uma tela no BIA que mostre a v
 
 ## Status
 
-validada pelo QA
+aceita
 
 ---
 
@@ -142,16 +142,26 @@ Nenhum bug encontrado.
 
 ## Finalização (PO)
 
-- [ ] Verificar se tudo foi implementado conforme o escopo
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se `com bugs`, devolver ao Dev)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, status `recusada` com motivo e devolver ao Dev
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
-- [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada e **aguardar o OK**
-  - [ ] Após o OK, confirmar que está no branch `feat/001-tela-versao`
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
-  - [ ] Fazer commit e push final no branch da task
-  - [ ] Confirmar com `git branch --show-current` que está em `feat/001-tela-versao`
-  - [ ] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[001] - feat: tela de versão`
-  - [ ] Enviar ao usuário o link do PR
+- [x] Verificar se tudo foi implementado conforme o escopo
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se `com bugs`, devolver ao Dev)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, status `recusada` com motivo e devolver ao Dev
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada e **aguardar o OK**
+  - [x] Após o OK, confirmar que está no branch `feat/001-tela-versao`
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
+  - [x] Fazer commit e push final no branch da task
+  - [x] Confirmar com `git branch --show-current` que está em `feat/001-tela-versao`
+  - [x] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[001] - feat: tela de versão`
+  - [x] Enviar ao usuário o link do PR
+
+**Aceite do PO:**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Acesso pela rota | ✅ | Rota `/versao` em `App.jsx`; `Versao.jsx` exibe título "Versão" e o texto de `/api/versao` (`Bia 4.3.0` no E2E do QA) |
+| 2 | Acesso pelo menu | ✅ | Link "Versão" em `Header.jsx` (presente em todas as telas); E2E a partir de `/`, `/about` e `/versao` termina em `/versao` |
+| 3 | Versão igual à do projeto | ✅ | Tela exibe `Bia 4.3.0`; `package.json` = `4.3.0` |
+| 4 | API indisponível | ✅ | `catch` exibe "Não foi possível obter a versão da API"; falha simulada pelo QA sem quebrar a tela |
+| 5 | Sem regressão | ✅ | `/` e `/about` funcionando, `VersionInfo` inalterado; 16 testes passando |
