@@ -33,7 +33,7 @@ Como **usuário da BIA**, quero **que o checkbox "Importante" já venha marcado 
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -81,7 +81,21 @@ pronta para aceite
 
 ## Validação QA
 
-_(preenchido pelo QA)_
+**Ambiente:** branch `feat/004-checkbox-importante-padrao` (commit `3449ff8`), containers do `docker compose` em execução, `curl -s http://localhost:3001/api/versao` → `Bia 4.3.0`. Validação feita pela interface em navegador real (Firefox headless controlado via WebDriver/geckodriver) em `http://localhost:3001`, conferindo o DOM, a lista na tela e a API `/api/tarefas`. Tarefas de teste: `QA-004 importante padrao` e `QA-004 nao importante`.
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Checkbox marcado ao abrir o formulário | ✅ | Ao carregar a página: `#importante.checked = true` (label "Importante"). Repetido depois de recarregar a página (F5): `checked = true`. A captura de tela mostra o checkbox marcado. |
+| 2 | Tarefa salva como importante por padrão | ✅ | Preenchido só "Tarefa" (`QA-004 importante padrao`), clique em "Add New Task" sem mexer no checkbox. Na lista: item com classe `task reminder` e estrela cheia ("Remover importante"). `/api/tarefas`: `"importante": true`, `"dia_atividade": "17/11/2026"`. |
+| 3 | Usuário pode desmarcar | ✅ | Clique no checkbox → `checked = false`. Cadastro de `QA-004 nao importante`: na lista, item com classe `task ` (sem `reminder`) e estrela vazia ("Marcar importante"). `/api/tarefas`: `"importante": false`. |
+| 4 | Formulário volta com o checkbox marcado após cadastrar | ✅ | Depois de cadastrar com o checkbox marcado: `{checked: true, tarefa: "", data: ""}`. Depois de cadastrar com o checkbox desmarcado: `{checked: true, tarefa: "", data: ""}`. |
+| 5 | Apenas o checkbox muda | ✅ | Ao abrir, "Tarefa" e "Data/Prazo" estão vazios (`""`). Ao enviar sem título, o modal "Campo obrigatório / Por favor, adicione uma descrição para a tarefa" aparece e nenhuma tarefa é criada na API. Listagem: depois de recarregar, as duas tarefas aparecem com o estado salvo. Edição (clique na estrela de `QA-004 nao importante`): vira `task reminder` na tela e `"importante": true` na API. Exclusão (botão X): as duas tarefas somem da tela e de `/api/tarefas`. O diff do commit `3449ff8` em `client/` tem só 2 linhas (`useState(true)` e `setImportante(true)`). |
+
+**Testes unitários:** `docker compose exec -T server npm test` → `Test Suites: 2 passed, 2 total` / `Tests: 16 passed, 16 total`.
+
+**Limpeza:** as 2 tarefas de teste foram excluídas pela própria interface (botão X, também usado para validar a exclusão). Depois disso, `curl -s http://localhost:3001/api/tarefas` → `{"dbTime":16,"data":[]}`, o mesmo estado do início da validação.
+
+**Observação (fora do escopo, problema que já existia):** no modal "Campo obrigatório", o botão **OK** não fecha o modal. O `<Modal>` fica dentro do `<form>` em `AddTask.jsx` e o botão OK não tem `type="button"`, então ele também envia o formulário e o modal reabre. O modal só fecha clicando fora dele (overlay). O comportamento é idêntico em `main`/`ia-main` (esta task não alterou o modal), por isso não bloqueia o aceite. Sugestão: abrir uma task própria para corrigir.
 
 ## Finalização (PO)
 
