@@ -49,7 +49,7 @@ Como **aluna da Formação AWS que entrega tasks por PR**, quero **que os testes
 
 ## Status
 
-validada pelo QA
+aceita
 
 ---
 
@@ -130,17 +130,27 @@ Nenhum bug encontrado.
 
 ## Finalização (PO)
 
-- [ ] Verificar se tudo foi implementado conforme o escopo técnico
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
-- [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
-  - [ ] Após o OK, confirmar que está no branch `feat/006-github-actions-testes-pr` (não em `ia-main` nem em `main`)
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
-  - [ ] Fazer commit e push final no branch da task
-  - [ ] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[006] - feat: GitHub Actions rodando os testes em todo PR contra ia-main` (rodar `git branch --show-current` imediatamente antes do `gh pr create`), conferindo se o check do workflow passou
-  - [ ] Fazer o merge do PR em `ia-main` com **squash**
-  - [ ] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
-  - [ ] Enviar ao usuário o link do PR e o commit do merge
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
+  - [x] Após o OK, confirmar que está no branch `feat/006-github-actions-testes-pr` (não em `ia-main` nem em `main`)
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
+  - [x] Fazer commit e push final no branch da task
+  - [x] PR contra `ia-main` em `EvelynBonatto/bia` com título `[006] - feat: GitHub Actions rodando os testes em todo PR contra ia-main`: reaproveitado o PR #6 (aberto pelo DevOps para validar o workflow; descrição corrigida para o padrão a pedido do usuário), com o check do workflow conferido antes do merge
+  - [x] Fazer o merge do PR em `ia-main` com **squash**
+  - [x] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
+  - [x] Enviar ao usuário o link do PR e o commit do merge
+
+**Aceite do PO:**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Executa em PR contra ia-main | ✅ | PR #6 disparou o workflow na abertura e em cada push (runs 44175043004, 44175203014, 44176343058), executando `npm test` |
+| 2 | Resultado visível no PR (sucesso) | ✅ | Check `testes` = SUCCESS no PR #6; log com `Tests: 16 passed, 16 total` |
+| 3 | Resultado visível no PR (falha) | ✅ | PR descartável #7: run 44176039244 = `failure`, log aponta `Versao Controller › get deve retornar a string de resposta correta` |
+| 4 | Não executa fora do escopo | ✅ | PR descartável #8 contra outro branch: nenhuma execução (`total_count: 0`) |
+| 5 | Simples e seguro | ✅ | `.github/workflows/testes-pr.yml`: Node 24, `npm ci` + `npm test`, sem segredos/credenciais AWS; sem alteração em `tests/`, `api/` e `package.json` |
