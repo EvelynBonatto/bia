@@ -33,7 +33,7 @@ Como **aluno da Formação AWS**, quero **acessar uma tela no BIA que mostre a v
 
 ## Status
 
-aberta
+pronta para aceite
 
 ---
 
@@ -55,16 +55,33 @@ aberta
 - [x] Confirmar que está no branch `ia-main` antes de iniciar
 - [x] Mover a task para `.claude/tasks/doing/`
 - [x] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Criar o branch `feat/001-tela-versao` a partir de `ia-main`
-- [ ] Criar a tela de versão consumindo `/api/versao`
-- [ ] Registrar a rota `/versao` no React Router
-- [ ] Adicionar o link "Versão" no cabeçalho
-- [ ] Tratar o cenário de API indisponível com a mensagem definida
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
-- [ ] Mudar o status para `pronta para aceite`
-- [ ] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+- [x] Criar o branch `feat/001-tela-versao` a partir de `ia-main`
+- [x] Criar a tela de versão consumindo `/api/versao`
+- [x] Registrar a rota `/versao` no React Router
+- [x] Adicionar o link "Versão" no cabeçalho
+- [x] Tratar o cenário de API indisponível com a mensagem definida
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Mudar o status para `pronta para aceite`
+- [x] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+
+## Implementação (Dev)
+
+**Branch:** `feat/001-tela-versao`
+
+**O que foi feito:**
+- Criado `client/src/components/Versao.jsx`: tela com título "Versão" que busca `/api/versao` com a mesma lógica de URL da API do `VersionInfo` (`VITE_API_URL` → origin na porta 8080 → `http://localhost:8080`). Se a requisição falhar (erro de rede ou status não-OK), exibe "Não foi possível obter a versão da API". Reaproveita as classes CSS da tela About (`about-page`, `feature-card`, `back-button`), sem CSS novo.
+- `client/src/App.jsx`: registrada a rota `/versao`.
+- `client/src/components/Header.jsx`: adicionado o link "Versão" (`<Link to="/versao">`) ao lado do `VersionInfo`, que continua inalterado.
+
+**Evidências:**
+- Deploy local `docker compose down && docker compose build && docker compose up -d`: build do Vite ok (`✓ 58 modules transformed`, `✓ built`), containers `bia`, `database` e `redis` iniciados.
+- `curl -s http://localhost:3001/api/versao` → `Bia 4.3.0` (igual ao `version` 4.3.0 do `package.json`).
+- `curl` em `/`, `/about` e `/versao` → HTTP 200 (`/versao` serve o `index.html` do SPA).
+- Mensagem "Não foi possível obter a versão da API" presente no bundle buildado.
+- `npm test` (dentro do container `server`): 2 suítes, 16 testes passando.
+- Observação para o QA: como frontend e API são servidos pelo mesmo container, o cenário "API indisponível" precisa ser simulado (ex.: frontend apontando para uma `VITE_API_URL` inválida ou bloqueando a requisição no DevTools).
 
 ## Validação QA
 
