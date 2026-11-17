@@ -19,7 +19,7 @@ O foco base dele é fornecer uma estrutura educacional em que o aluno possa evol
 ## Análise Técnica (Amazon Q)
 
 ### Arquitetura Identificada
-- **Frontend:** React 17.0.2 com Vite para build
+- **Frontend:** React 19.3.1 com Vite para build
 - **Backend:** Node.js com Express 4.17.1
 - **Banco de Dados:** PostgreSQL 16.1
 - **ORM:** Sequelize 6.6.5

@@ -3,7 +3,7 @@ import { FaSun, FaMoon } from "react-icons/fa";
 import { useTheme } from "../contexts/ThemeContext.jsx";
 import VersionInfo from "./VersionInfo";
 
-const Header = ({ title }) => {
+const Header = ({ title = "BIA" }) => {
   const { isDarkMode, toggleTheme } = useTheme();
   
   return (
@@ -21,10 +21,6 @@ const Header = ({ title }) => {
       </div>
     </header>
   );
-};
-
-Header.defaultProps = {
-  title: "BIA",
 };
 
 export default Header;

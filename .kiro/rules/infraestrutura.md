@@ -16,7 +16,7 @@
 
 ## Recursos Avançados - NÃO INCLUIR
 - **Secrets Manager:** É um estágio mais avançado do aprendizado
-- **Multi-AZ deployments:** Manter configuração simples
+- **Multi-AZ no RDS:** Manter o banco em uma única AZ (o uso das zonas A e B vale só para ALB e EC2 do ECS, ver abaixo)
 - **Auto Scaling complexo:** Usar configurações básicas
 
 ## Availability Zones (Cenário com ALB)

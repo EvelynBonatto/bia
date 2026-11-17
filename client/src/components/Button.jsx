@@ -1,6 +1,6 @@
 import React from "react";
 
-const Button = ({ color, text, onClick }) => {
+const Button = ({ color = "", text, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -9,10 +9,6 @@ const Button = ({ color, text, onClick }) => {
       {text}
     </button>
   );
-};
-
-Button.defaultProps = {
-  color: "",
 };
 
 export default Button;
