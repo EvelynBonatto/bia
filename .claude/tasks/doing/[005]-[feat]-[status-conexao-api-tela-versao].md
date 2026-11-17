@@ -49,7 +49,7 @@ Como **aluno da Formação AWS**, quero **ver na tela de versão se a aplicaçã
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -93,23 +93,37 @@ pronta para aceite
 
 > **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 
-- [ ] Confirmar que está no branch da task (`git branch --show-current`)
-- [ ] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
-- [ ] Rodar a suíte de testes e registrar o resultado
-- [ ] Remover os dados de teste criados durante a validação
-- [ ] Testes no navegador: usar o navegador em container (`qa-browser`, ver `qa.md`) e encerrá-lo com `docker stop qa-browser` ao final, junto com qualquer servidor temporário
-- [ ] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
-- [ ] Mudar o status para `validada pelo QA` ou `com bugs`
-- [ ] Fazer commit e push no branch da task
-- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+- [x] Confirmar que está no branch da task (`git branch --show-current`)
+- [x] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
+- [x] Rodar a suíte de testes e registrar o resultado
+- [x] Remover os dados de teste criados durante a validação
+- [x] Testes no navegador: usar o navegador em container (`qa-browser`, ver `qa.md`) e encerrá-lo com `docker stop qa-browser` ao final, junto com qualquer servidor temporário
+- [x] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
+- [x] Mudar o status para `validada pelo QA` ou `com bugs`
+- [x] Fazer commit e push no branch da task
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
 
 ## Validação QA
 
-_(preenchido pelo QA)_
+**Ambiente:** branch `feat/005-status-conexao-api-tela-versao` (commit `47ffa0f`), containers `bia`, `database` e `redis` em execução, bundle `assets/index-B22yl77t.js`. Navegador real: Firefox no container `qa-browser` (`selenium/standalone-firefox`, `--network host`), controlado via WebDriver na porta 4444.
+
+**Como os estados da API foram simulados:** o Firefox do container foi configurado para usar um proxy HTTP temporário (scratchpad, porta 3999, não comitado). O proxy repassa tudo para `http://localhost:3001` sem alterar nada e muda só o comportamento de `GET /api/versao`: `online` (repassa), `slow` (atraso de 3s), `offline` (fecha a conexão sem responder, ou seja, API inalcançável), `503` (responde HTTP 503) e `hang` (atraso de 8s, acima do timeout de 5s do front). Nem o código da aplicação nem o bundle foram alterados.
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | API online | ✅ | `/versao` com a API no ar mostra no card: `Versão / Bia 4.3.0 / 🟢 API online`. Log do proxy: `GET http://localhost:3001/api/versao 200`. |
+| 2 | API offline | ✅ | Com a conexão de `/api/versao` fechada pelo proxy, o card mostra `Não foi possível obter a versão da API` e `🔴 API offline` (estado final em 0,24s). A tela não quebrou: título `BIA + IA`, cabeçalho e botão `← Voltar` continuam renderizados (screenshot `2-offline`). O mesmo resultado aparece com HTTP 503 e com timeout de 8s (o front aborta em cerca de 5s e mostra offline). |
+| 3 | Verificação em andamento | ✅ | Com atraso de 3s, 0,8s depois de abrir a página o card mostra `Carregando... / Verificando conexão...` (screenshot `3-verificando`). Depois que a resposta chega, muda para `🟢 API online` (em cerca de 2,2s). Com atraso de 8s, aparece `Verificando conexão...` aos 2s e depois `🔴 API offline`, no tempo do timeout de 5s. |
+| 4 | Status coerente com o cabeçalho | ✅ | Comparação do texto do card com a classe e o ícone do botão `.version-trigger` (`VersionInfo`) em todos os cenários. Online: card `🟢 API online`, cabeçalho `version-trigger online | 🟢`. Offline (conexão fechada, 503 e timeout): card `🔴 API offline`, cabeçalho `version-trigger offline | 🔴`. Verificando: card `Verificando conexão...`, cabeçalho `version-trigger checking | 🟡`. Os dois estados ficaram iguais em todas as medições. |
+| 5 | Sem regressão | ✅ | `/`: lista de tarefas e formulário `Add New Task` renderizados, cabeçalho 🟢. `/about`: conteúdo do evento e links renderizados, cabeçalho 🟢. `/versao`: `Bia 4.3.0` + `🟢 API online`. Tooltip do `VersionInfo`: `Bia 4.3.0 / Status: Online / API: http://localhost:3001`. `curl http://localhost:3001/api/versao` → `Bia 4.3.0`. |
+
+**Suíte de testes:** `docker compose exec -T server npm test` → `Test Suites: 2 passed, 2 total` / `Tests: 16 passed, 16 total`.
+
+**Limpeza:** nenhum dado foi criado no banco (`/api/tarefas` → `{"data":[]}`). O container `qa-browser` foi encerrado com `docker stop qa-browser` e o proxy temporário foi finalizado. `docker ps` mostra só `bia`, `database` e `redis`.
 
 ## Bugs
 
-_(preenchido pelo QA, se houver)_
+Nenhum bug encontrado.
 
 ## Finalização (PO)
 
