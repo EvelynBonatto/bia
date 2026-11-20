@@ -46,7 +46,7 @@ Como **aluna da Formação AWS**, quero **que o agente `devops` tenha os seus pr
 
 ## Status
 
-validada pelo QA
+aceita
 
 ---
 
@@ -148,17 +148,31 @@ Nenhum bug encontrado.
 
 ## Finalização (PO)
 
-- [ ] Verificar se tudo foi implementado conforme o escopo técnico
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
-- [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
-  - [ ] Após o OK, confirmar que está no branch `chore/007-mcp-agente-devops` (não em `ia-main` nem em `main`)
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
-  - [ ] Fazer commit e push final no branch da task
-  - [ ] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[007] - chore: MCP da AWS e do Postgres no agente devops` (rodar `git branch --show-current` imediatamente antes do `gh pr create`), conferindo se o check do workflow passou
-  - [ ] Fazer o merge do PR em `ia-main` com **squash**
-  - [ ] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
-  - [ ] Enviar ao usuário o link do PR e o commit do merge
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
+  - [x] Após o OK, confirmar que está no branch `chore/007-mcp-agente-devops` (não em `ia-main` nem em `main`)
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
+  - [x] Fazer commit e push final no branch da task
+  - [x] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[007] - chore: MCP da AWS e do Postgres no agente devops` (rodar `git branch --show-current` imediatamente antes do `gh pr create`), conferindo se o check do workflow passou
+  - [x] Fazer o merge do PR em `ia-main` com **squash**
+  - [x] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
+  - [x] Enviar ao usuário o link do PR e o commit do merge
+
+**Aceite do PO:**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | MCP da AWS no devops | ✅ | Verificação do PO, autorizada pela usuária: o agente `devops`, acionado numa sessão nova, recebeu as ferramentas nativas `mcp__aws-mcp__*`. Com `aws___run_script`, ECS `ListClusters` em `us-east-1` → `clusterArns: []` (a conta não tem cluster) e STS `GetCallerIdentity` → `user/formacaoaws` |
+| 2 | MCP do Postgres no devops | ✅ | Na mesma sessão, o `devops` recebeu as ferramentas nativas `mcp__postgres__*`. `list_objects` (`public`) → `SequelizeMeta` e `Tarefas`; `execute_sql` → banco `bia`, usuário `postgres`, servidor no container do compose |
+| 3 | Configuração na definição do agente | ✅ | `mcpServers` com `aws-mcp` e `postgres` no frontmatter de `.claude/agents/devops.md` |
+| 4 | Demais agentes e raiz sem alteração | ✅ | `git diff --stat ia-main` → só `devops.md`, `.claude/mcp/postgres-overrides.txt` e a própria task |
+
+**Observações (não bloqueiam o aceite):**
+- O acesso à AWS usa o usuário IAM `formacaoaws` (credenciais próprias), e não a role da instância `bia-dev`, por decisão da usuária registrada na task. Se o projeto passar a rodar na `bia-dev`, vale uma task para trocar o perfil pela role.
+- `.claude/mcp/postgres-overrides.txt` é necessário (confirmado pelo QA) e tem caminho relativo: o MCP do Postgres só sobe com o Claude Code aberto na raiz do projeto.
+- Todas as chamadas AWS feitas na entrega e na validação foram de leitura (relatado pelos agentes; não conferido no CloudTrail, por decisão da usuária).
