@@ -46,7 +46,7 @@ Como **aluna da Formação AWS**, quero **que o agente `devops` tenha os seus pr
 
 ## Status
 
-aberta
+pronta para aceite
 
 ---
 
@@ -57,16 +57,16 @@ aberta
 - [x] Confirmar que está no branch `ia-main` antes de iniciar
 - [x] Mover a task para `.claude/tasks/doing/`
 - [x] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Criar o branch `chore/007-mcp-agente-devops` a partir de `ia-main`
-- [ ] Declarar o `aws-mcp` (com `AWS_PROFILE=formacaoaws`, `us-east-1`) no cabeçalho de `.claude/agents/devops.md`
-- [ ] Declarar o `postgres` (banco local do `compose.yml`) no cabeçalho de `.claude/agents/devops.md`
-- [ ] Validar uma consulta de leitura em cada MCP (AWS e Postgres)
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
-- [ ] Registrar na task o que foi feito e as evidências
-- [ ] Mudar o status para `pronta para aceite`
-- [ ] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+- [x] Criar o branch `chore/007-mcp-agente-devops` a partir de `ia-main`
+- [x] Declarar o `aws-mcp` (com `AWS_PROFILE=formacaoaws`, `us-east-1`) no cabeçalho de `.claude/agents/devops.md`
+- [x] Declarar o `postgres` (banco local do `compose.yml`) no cabeçalho de `.claude/agents/devops.md`
+- [x] Validar uma consulta de leitura em cada MCP (AWS e Postgres)
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Registrar na task o que foi feito e as evidências
+- [x] Mudar o status para `pronta para aceite`
+- [x] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
 
 ## Checklist de Atividades (QA)
 
@@ -81,6 +81,38 @@ aberta
 - [ ] Mudar o status para `validada pelo QA` ou `com bugs`
 - [ ] Fazer commit e push no branch da task
 - [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+
+## Entrega DevOps
+
+**Branch:** `chore/007-mcp-agente-devops`
+
+### O que foi feito
+- `.claude/agents/devops.md`: adicionado o campo `mcpServers` no frontmatter com dois servidores stdio definidos inline:
+  - `aws-mcp`: `uvx mcp-proxy-for-aws@latest https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=us-east-1`, env `AWS_PROFILE=formacaoaws` (mesma configuração do `.mcp.json` da raiz).
+  - `postgres`: `uvx --overrides .claude/mcp/postgres-overrides.txt --with "mcp<2" postgres-mcp --access-mode=unrestricted`, env `DATABASE_URI=postgresql://postgres:postgres@localhost:5433/bia` (banco local do `compose.yml`).
+- `.claude/mcp/postgres-overrides.txt` (arquivo novo): override `pglast==7.24`.
+  - **Por quê:** a configuração de referência (`.kiro/mcp-db.json`) não funciona mais. O `postgres-mcp` 0.3.0 (última versão no PyPI) fixa `pglast==7.2.0`, que foi removida do PyPI (hoje a série 7 só tem 7.20 a 7.24). Sem o override, o `uvx` não resolve a 0.3.0 e cai na 0.1.0, que não aceita `--access-mode` e trata o argumento como DSN (`invalid dsn: invalid connection option "--access-mode"`).
+  - O caminho do override é relativo: o servidor precisa ser iniciado a partir da raiz do projeto (que é o comportamento padrão do Claude Code).
+
+### Evidências
+- **Critério 1 (aws-mcp):** servidor iniciado com a configuração lida do frontmatter do `devops.md`. Ferramentas expostas: `aws___run_script`, `aws___read_documentation`, `aws___search_documentation`, `aws___list_regions`, etc. Consulta de leitura via `aws___run_script` (ECS `ListClusters` + STS `GetCallerIdentity` em `us-east-1`):
+  ```
+  {"status": "success", "stdout": "[]\nuser/formacaoaws\n", ... "api_calls": [{"service": "ecs", "operation": "ListClusters", "status": "success", "n_items": {"clusterArns": 0}}, {"service": "sts", "operation": "GetCallerIdentity", "status": "success"}]}
+  ```
+  A chamada usou o perfil `formacaoaws`. Hoje não existe nenhum cluster ECS em `us-east-1`, por isso a lista vem vazia.
+- **Critério 2 (postgres):** com o `compose.yml` rodando, `list_objects` (schema `public`, tipo `table`) retornou:
+  ```
+  [{'schema': 'public', 'name': 'SequelizeMeta', 'type': 'BASE TABLE'}, {'schema': 'public', 'name': 'Tarefas', 'type': 'BASE TABLE'}]
+  ```
+  Log do servidor: `Starting PostgreSQL MCP Server in UNRESTRICTED mode` / `Successfully connected to database`.
+- **Critério 3:** `aws-mcp` e `postgres` estão declarados em `mcpServers` no frontmatter de `.claude/agents/devops.md` (YAML validado com `yaml.safe_load`).
+- **Critério 4:** `git diff --stat ia-main -- .mcp.json .claude/agents/dev.md .claude/agents/qa.md .claude/agents/po.md .kiro/ .claude/settings.local.json` vazio.
+- **Deploy local:** `docker compose down && docker compose build && docker compose up -d` sem erros; containers `bia`, `database` e `redis` em `Up`; `curl http://localhost:3001/api/versao` → `Bia 4.3.0` (igual ao `version` do `package.json`).
+
+### Limitação da validação (registrada de forma explícita)
+- Os MCPs **não foram carregados como ferramentas nativas nesta sessão do agente devops**: a definição do agente é lida quando ele é acionado, e a alteração foi feita durante a própria execução. A validação foi feita com um cliente MCP stdio (SDK Python `mcp<2`) que lê o frontmatter de `.claude/agents/devops.md` e sobe cada servidor com exatamente o `command`/`args`/`env` declarados ali (handshake `initialize`, `list_tools` e uma chamada de leitura).
+- Para o QA: acionar o agente `devops` numa sessão nova e confirmar que as ferramentas `mcp__aws-mcp__*` e `mcp__postgres__*` aparecem e respondem.
+- Esta máquina não é a `bia-dev`: o acesso à AWS foi pelo perfil `formacaoaws`, como a task pede.
 
 ## Validação QA
 

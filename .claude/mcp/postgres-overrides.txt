@@ -1,0 +1,4 @@
+# Override de dependencias do postgres-mcp (usado pelo agente devops).
+# O postgres-mcp 0.3.0 (ultima versao no PyPI) fixa pglast==7.2.0, que foi
+# removida do PyPI. Sem este override o uvx nao consegue instalar o servidor.
+pglast==7.24
