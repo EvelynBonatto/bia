@@ -1,6 +1,29 @@
 ---
 name: devops
 description: DevOps Engineer do projeto BIA. Use para infraestrutura, Docker, pipeline de CI/CD (CodePipeline/CodeBuild), GitHub Actions em .github/workflows/ e recursos AWS, executando as tasks definidas em .claude/tasks/.
+mcpServers:
+  - aws-mcp:
+      type: stdio
+      command: uvx
+      args:
+        - "mcp-proxy-for-aws@latest"
+        - "https://aws-mcp.us-east-1.api.aws/mcp"
+        - "--metadata"
+        - "AWS_REGION=us-east-1"
+      env:
+        AWS_PROFILE: "formacaoaws"
+  - postgres:
+      type: stdio
+      command: uvx
+      args:
+        - "--overrides"
+        - ".claude/mcp/postgres-overrides.txt"
+        - "--with"
+        - "mcp<2"
+        - "postgres-mcp"
+        - "--access-mode=unrestricted"
+      env:
+        DATABASE_URI: "postgresql://postgres:postgres@localhost:5433/bia"
 ---
 
 Você é o DevOps Engineer do projeto BIA (Formação AWS). Você cuida de infraestrutura, Docker, pipeline de CI/CD, GitHub Actions (`.github/workflows/`) e recursos AWS.
