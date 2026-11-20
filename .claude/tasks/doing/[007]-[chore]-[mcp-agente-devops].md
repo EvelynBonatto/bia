@@ -46,7 +46,7 @@ Como **aluna da Formação AWS**, quero **que o agente `devops` tenha os seus pr
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -72,15 +72,15 @@ pronta para aceite
 
 > **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 
-- [ ] Confirmar que está no branch da task (`git branch --show-current`)
-- [ ] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
-- [ ] Rodar a suíte de testes e registrar o resultado
-- [ ] Remover os dados de teste criados durante a validação
-- [ ] Testes no navegador: não aplicável (sem mudança de UI)
-- [ ] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
-- [ ] Mudar o status para `validada pelo QA` ou `com bugs`
-- [ ] Fazer commit e push no branch da task
-- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+- [x] Confirmar que está no branch da task (`git branch --show-current`)
+- [x] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
+- [x] Rodar a suíte de testes e registrar o resultado
+- [x] Remover os dados de teste criados durante a validação
+- [x] Testes no navegador: não aplicável (sem mudança de UI)
+- [x] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
+- [x] Mudar o status para `validada pelo QA` ou `com bugs`
+- [x] Fazer commit e push no branch da task
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
 
 ## Entrega DevOps
 
@@ -116,11 +116,35 @@ pronta para aceite
 
 ## Validação QA
 
-_(preenchido pelo QA)_
+**Branch:** `chore/007-mcp-agente-devops` (`git branch --show-current`). Validação feita com um cliente MCP stdio próprio do QA (JSON-RPC puro, sem SDK, fora do repositório), que lê o frontmatter de `.claude/agents/devops.md` e sobe cada servidor com o `command`/`args`/`env` declarados ali, a partir da raiz do projeto (o script do DevOps não foi reaproveitado).
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | MCP da AWS no devops | ✅ | `aws-mcp` subiu como declarado (`uvx mcp-proxy-for-aws@latest https://aws-mcp.us-east-1.api.aws/mcp --metadata AWS_REGION=us-east-1`, env `AWS_PROFILE=formacaoaws`). `tools/list` → `aws___run_script`, `aws___list_regions`, `aws___read_documentation`, entre outras. `aws___run_script` com `call_boto3` ECS `ListClusters` + STS `GetCallerIdentity` → `{"status": "success", "stdout": "clusters: []\narn: user/formacaoaws\n", "api_calls": [{"service": "ecs", "operation": "ListClusters", "status": "success", ...}]}`. Conferência pela CLI: `AWS_PROFILE=formacaoaws aws ecs list-clusters --region us-east-1` também retorna a lista vazia, e o ARN é `user/formacaoaws`. |
+| 2 | MCP do Postgres no devops | ✅ | Compose rodando (`bia`, `database` em `5433`, `redis`). `postgres` subiu como declarado; log: `Starting PostgreSQL MCP Server in UNRESTRICTED mode` / `Successfully connected to database`. `list_objects` (`public`, `table`) → `SequelizeMeta` e `Tarefas` (`BASE TABLE`), o mesmo resultado de `psql -U postgres -d bia -c '\dt'` direto no container `database`. |
+| 3 | Configuração na definição do agente | ✅ | `yaml.safe_load` do frontmatter de `.claude/agents/devops.md` → `mcpServers` com `['aws-mcp', 'postgres']`, definidos inline (formato de lista `nome: config`). |
+| 4 | Demais agentes e raiz sem alteração | ✅ | `git diff --stat ia-main -- .mcp.json .claude/agents/dev.md .claude/agents/qa.md .claude/agents/po.md .kiro/` vazio (igual contra `origin/ia-main`). O diff total contra `ia-main` mostra só `devops.md`, `.claude/mcp/postgres-overrides.txt` e a própria task. |
+
+### Verificação independente do override (`.claude/mcp/postgres-overrides.txt`)
+- **Sem override** (mesma linha de comando, só sem o `--overrides`, com `--refresh`): o `uvx` resolve `postgres-mcp` **0.1.0**, e o servidor encerra sem responder ao `initialize`: `Error connecting to database: invalid dsn: invalid connection option "--access-mode"`.
+- **Forçando a 0.3.0 sem override** (`uvx --refresh --with "mcp<2" postgres-mcp==0.3.0`): `No solution found ... there is no version of pglast==7.2.0 and postgres-mcp==0.3.0 depends on pglast==7.2.0`.
+- **Com override**: resolve `postgres-mcp` **0.3.0** com `pglast` **7.24** e funciona (critério 2).
+- Conclusão: o diagnóstico do DevOps está correto e o arquivo extra é necessário.
+
+### Testes e aplicação
+- `npm test` (dentro do container `bia`, porque o `jest` não está instalado no host): **2 suítes, 16 testes, todos passando**.
+- `curl http://localhost:3001/api/versao` → `Bia 4.3.0`.
+- Dados de teste: nenhum foi criado (só consultas de leitura na AWS e no banco).
+- Navegador: não aplicável (sem mudança de UI); o container `qa-browser` não foi usado.
+
+### Limitações
+- **Não confirmei que as ferramentas `mcp__aws-mcp__*` e `mcp__postgres__*` aparecem quando o agente `devops` é acionado pelo Claude Code.** A sessão do QA não carrega os MCPs do `devops`, e não acionei o agente `devops` para conferir. O que está comprovado: os servidores sobem e respondem com a configuração exata do frontmatter. Fica para o PO (ou numa sessão nova) acionar o `devops` e confirmar que as ferramentas estão disponíveis.
+- O caminho do override é relativo (`.claude/mcp/postgres-overrides.txt`): o servidor só sobe se o Claude Code for iniciado a partir da raiz do projeto. Não é bug, porque esse é o uso esperado, mas vale saber.
+- Esta máquina não é a `bia-dev`; o acesso à AWS foi pelo perfil `formacaoaws`, como a task pede.
 
 ## Bugs
 
-_(preenchido pelo QA, se houver)_
+Nenhum bug encontrado.
 
 ## Finalização (PO)
 
