@@ -53,7 +53,7 @@ Como **usuário da BIA**, quero **escolher a data/prazo da tarefa em um calendá
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -129,6 +129,37 @@ Depois da primeira validação do QA, a usuária pediu que o calendário combina
 
 ## Validação QA
 
+### Revalidação: commit `e60f66e` (calendário próprio com as cores da BIA)
+
+**Ambiente:** worktree `.claude/worktrees/008-calendario-data-prazo/`, branch `feat/008-calendario-data-prazo`, `git pull --ff-only` até `e60f66e`. Os containers da porta 3001 continuavam com a task 009 (`docker inspect bia` → `working_dir` = `.../009-tela-analytics-prioridade`), então não foram derrubados. O QA rodou de novo um container temporário só com o código da 008 (`bia-qa-008`, porta **3008**, rede `bia-multi-agentic_default`, mesmo banco; `/api/versao` → `Bia 4.3.0`). O bundle chama a API em `localhost:3001`; a 008 não muda o backend. O container e a imagem temporários foram removidos ao final.
+
+**Navegador:** MCP do Playwright (Chromium headless), contexto com locale `en-US`. O dia foi escolhido clicando no botão real (`.calendario-dia` com texto `20`), sem `force`.
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Calendário ao clicar no campo | ✅ | Antes do clique, `.calendario` não existe. Depois do clique, fica visível com o título `Novembro 2026` e os cabeçalhos `Dom,Seg,Ter,Qua,Qui,Sex,Sáb`. Novembro tem 30 dias, o dia 1 cai no Domingo, e hoje (`21`) tem a classe `hoje`. O campo é `readOnly` e não há mais `input[type=date]` (0 na página). Também abre com Enter e com Espaço no campo |
+| 2 | Data escolhida aparece no campo (DD/MM/AAAA) | ✅ | Clique no dia 20 → campo `20/11/2026` (navegador em `en-US`), e o calendário fecha. Ao reabrir, o dia `20` tem a classe `selecionado` |
+| 3 | Data salva como string DD/MM/AAAA | ✅ | Body do POST: `{"titulo":"QA 008 r3 com data","dia_atividade":"20/11/2026","importante":true}`; `GET /api/tarefas` → `"dia_atividade":"20/11/2026"`; card na lista: `QA 008 r3 com data / 📅 20/11/2026` |
+| 4 | Data continua opcional | ✅ | Só o título preenchido (Importante desmarcado) → POST `{"titulo":"QA 008 r3 sem data","dia_atividade":"21/11/2026","importante":false}` (data de hoje, mesmo comportamento anterior). Card: `📅 21/11/2026` |
+| 5 | Formulário limpo após cadastrar | ✅ | Após o cadastro: campo Data/Prazo `""`, Tarefa `""`, Importante marcado, calendário fechado. Ao reabrir, nenhum dia está `selecionado` e o calendário volta para o mês atual (`Novembro 2026`) |
+| 6 | Sem mudança no banco e no restante da tela | ✅ | `git diff ia-main -- api database config` → vazio (mudaram só `AddTask.jsx`, `Calendario.jsx` e `index.css`). As tarefas da usuária continuam com a data como antes (ex.: `Corrigir bug no login / 📅 24/11/2026`). O modal "Campo obrigatório" aparece ao enviar sem título. O toggle de prioridade funcionou nas duas direções numa tarefa do QA (`importante` false → true → false, conferido em `/api/tarefas`). A exclusão funcionou (`DELETE /api/tarefas/<uuid>`). A paginação (5 por página, que já existe em `ia-main`) segue funcionando |
+
+**Comportamentos do calendário novo:**
+- Troca de mês: › leva para `Dezembro 2026` e depois para `Janeiro 2027` (31 dias), virando o ano. ‹ volta até `Outubro 2026`.
+- Esc fecha o calendário ✅. Clicar fora fecha ✅. Um segundo clique no campo fecha ✅. Ao reabrir, o calendário mostra o mês da data escolhida (ou o mês atual, se não houver data).
+- Cores do tema (estilos computados × variáveis do tema):
+  - **Claro:** fundo `rgb(255,255,255)` = `--bg-card #ffffff`, borda `rgb(229,231,235)` = `--border-color #e5e7eb`, texto `rgb(31,41,55)` = `--text-primary #1f2937`, dia escolhido com fundo `rgb(59,130,246)` = `--accent-primary #3b82f6` e texto branco, hoje com borda `#3b82f6`.
+  - **Escuro** (pelo botão de tema do header): fundo `rgb(31,41,55)` = `--bg-card #1f2937`, borda `rgb(55,65,81)` = `#374151`, texto `rgb(249,250,251)` = `#f9fafb`, dia escolhido com fundo `rgb(96,165,250)` = `--accent-primary #60a5fa`, hoje com borda `#60a5fa`.
+  - O tema foi restaurado para claro no final.
+- Capturas de tela (fora do repositório): `/tmp/playwright-mcp/qa008-r2-claro.png` e `/tmp/playwright-mcp/qa008-r2-escuro.png`. As duas mostram o calendário aberto em Novembro 2026, com o dia 20 preenchido em azul e o dia 21 com borda azul, combinando com o tema.
+- Observação (não é bug): clicar no botão de tema com o calendário aberto fecha o calendário, porque conta como clique fora. É o comportamento esperado.
+
+**Testes unitários:** `npm test` → 2 suítes, 16 testes passando.
+
+**Limpeza:** removidas pela tela só as tarefas criadas pelo QA ("QA 008 r2 com data", "QA 008 r2 debug", "QA 008 r3 com data", "QA 008 r3 sem data"). `GET /api/tarefas` final → apenas as 5 tarefas da usuária ("Corrigir bug no login", "Organizar a mesa de trabalho", "Ler artigo sobre AWS ECS", "Revisar pull request", "Preparar apresentação da sprint"). Navegador fechado (`browser_close`, sem processo Chromium restante). Container `bia-qa-008` parado e imagem removida.
+
+### Primeira validação: commit `20d1197` (calendário nativo, substituído)
+
 **Ambiente:** worktree `.claude/worktrees/008-calendario-data-prazo/`, branch `feat/008-calendario-data-prazo`, commit `20d1197`. Na hora do deploy, outra sessão (task 009) subiu os containers `bia`/`database`/`redis` a partir do worktree da 009 (`com.docker.compose.project.working_dir` = `.../009-tela-analytics-prioridade`). Para não derrubar o ambiente da outra task, o QA gerou uma imagem só do código da 008 (`docker build -t bia-qa-008 .`) e rodou um container temporário `bia-qa-008` na porta **3008**, ligado à mesma rede e ao mesmo banco (`curl localhost:3008/api/versao` → `Bia 4.3.0`). Obs.: o bundle do front tem `VITE_API_URL=http://localhost:3001` (Dockerfile), então a tela da 008 (porta 3008) chamou a API da porta 3001. Isso não afeta a validação: a 008 não mexe no backend (diff vazio) e o banco é o mesmo. O container e a imagem temporários foram removidos ao final.
 
 **Navegador:** MCP do Playwright (Chromium headless), num contexto com locale `en-US` (`navigator.language` = `en-US`).
@@ -148,7 +179,7 @@ Depois da primeira validação do QA, a usuária pediu que o calendário combina
 
 ## Bugs
 
-Nenhum bug encontrado.
+Nenhum bug encontrado (validação de `20d1197` e revalidação de `e60f66e`).
 
 ## Finalização (PO)
 
