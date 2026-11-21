@@ -60,7 +60,7 @@ Como **usuário da BIA**, quero **ver um gráfico com a quantidade de tarefas po
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -108,19 +108,39 @@ pronta para aceite
 
 > **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 
-- [ ] Confirmar que está no worktree da task e no branch dela (`git branch --show-current` dentro de `.claude/worktrees/009-tela-analytics-prioridade/`)
-- [ ] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
-- [ ] Rodar a suíte de testes e registrar o resultado
-- [ ] Remover os dados de teste criados durante a validação
-- [ ] Testes no navegador: usar o MCP do Playwright (preferencial) ou o navegador em container (`qa-browser`), conforme o `qa.md`, e confirmar ao final que nenhum navegador ou servidor temporário ficou aberto
-- [ ] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
-- [ ] Mudar o status para `validada pelo QA` ou `com bugs`
-- [ ] Fazer commit e push no branch da task
-- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+- [x] Confirmar que está no worktree da task e no branch dela (`git branch --show-current` dentro de `.claude/worktrees/009-tela-analytics-prioridade/`)
+- [x] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
+- [x] Rodar a suíte de testes e registrar o resultado
+- [x] Remover os dados de teste criados durante a validação
+- [x] Testes no navegador: usar o MCP do Playwright (preferencial) ou o navegador em container (`qa-browser`), conforme o `qa.md`, e confirmar ao final que nenhum navegador ou servidor temporário ficou aberto
+- [x] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
+- [x] Mudar o status para `validada pelo QA` ou `com bugs`
+- [x] Fazer commit e push no branch da task
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
 
 ## Validação QA
 
-_(preenchida pelo QA)_
+**Ambiente:** worktree `.claude/worktrees/009-tela-analytics-prioridade` (branch `feat/009-tela-analytics-prioridade`, commit `8877b52`), containers subidos com `COMPOSE_PROJECT_NAME=bia-multi-agentic docker compose build && up -d`. `curl /api/versao` → `Bia 4.3.0`; `GET /analytics` → HTTP 200. Navegador: MCP do Playwright (Chromium headless, `--isolated`). Contagem das barras lida do SVG do gráfico (altura da barra ÷ pixels por unidade do eixo Y) e comparada com `importante=true/false` de `/api/tarefas` (`{ data: [...] }`).
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Box "Ver Analytics" na home | ✅ | Snapshot da home: `link "📊 Ver Analytics Visualize suas tarefas por prioridade →"` (`/url: /analytics`), com `heading "Ver Analytics"`, `paragraph "Visualize suas tarefas por prioridade"` e `→`. Posição: fim do formulário y=354, box y=370–449, primeira tarefa da lista y=577 (entre o formulário e a lista). Seta à direita do texto (texto termina em x=798, seta começa em x=814). `cursor: pointer`. |
+| 2 | Box leva para Analytics | ✅ | Clique na box → `Page URL: http://localhost:3001/analytics`. Acesso direto a `/analytics` → HTTP 200. |
+| 3 | Gráfico de barras por prioridade (shadcn/ui) | ✅ | Gráfico renderizado dentro de `[data-slot="chart"]` (`ChartContainer` de `client/src/components/ui/chart.jsx`, componente chart do shadcn/ui), eixo X "Importantes" e "Não importantes". Carga inicial: gráfico `Importantes=2, Não importantes=0` × API `2/0`. Com tarefa não importante criada: gráfico `Importantes=1, Não importantes=1` × API `importantes=1, nao=1`. |
+| 4 | Gráfico reflete mudanças | ✅ | Pela home: criada "QA 009 nao importante" (sem estrela) → Analytics `1/1` = API `1/1`; marcada a estrela → Analytics `2/0` = API `2/0`; excluída → Analytics `1/0` = API `1/0`. Os dados são buscados a cada abertura da tela (incluindo voltar/avançar do navegador). Nenhum erro de JavaScript. |
+| 5 | Sem tarefas | ✅ | Validado **sem apagar dados**: `/api/tarefas` interceptada no Playwright (`page.route`) retornando `{ data: [] }` e também `[]`. Nos dois casos a tela mostra "Não há tarefas para exibir 📊 / Cadastre tarefas na tela inicial para ver o gráfico.", sem gráfico renderizado e sem erros (`pageerror` e `console.error` vazios). |
+| 6 | Voltar para a home | ✅ | "← Voltar" → `http://localhost:3001/`, formulário (`.add-form`) presente e lista carregada ("Tarefa criada via Playwright"); em seguida cadastro/estrela/exclusão funcionando (ver critério 7). |
+| 7 | Sem mudança no backend e no restante da home | ✅ | `git diff ia-main --name-only` só lista arquivos em `client/` e a própria task; `git diff ia-main -- api database config` vazio (sem migration). Regressão na home: criada "QA 009 regressao" (listada, title "Remover importante"), estrela alternada (title "Marcar importante"), exclusão com confirmação (tarefa some da lista). Nenhum erro de JavaScript. |
+
+**Testes unitários:** `npm test` → `Test Suites: 2 passed, 2 total` / `Tests: 16 passed, 16 total`.
+
+**Dados de teste:** as duas tarefas criadas pelo QA ("QA 009 nao importante" `10031090-…` e "QA 009 regressao" `2cb4f370-…`) foram excluídas pela própria UI ao final de cada teste (confirmado nos logs do container: `DELETE` dos dois uuids). Nenhuma tarefa existente foi apagada pelo QA e "Limpar tudo" não foi usado.
+
+**Observação (ambiente, não é bug da entrega):** durante a validação, outro cliente acessou a mesma aplicação em `localhost:3001` ao mesmo tempo (provavelmente a sessão da task 008, que usa os mesmos containers/porta). Os logs do container `bia` mostram, fora das ações do QA, `INSERT`s às 23:34:03, `UPDATE` às 23:34:12, `DELETE` de `09131820-…`, `0925dcd0-…` e `345d34d0-…` ("teste ui dev 008") às 23:34:13 e `DELETE` de `3c233aa0-…` ("Tarefa criada via Playwright") às 23:35:10 UTC, quando o navegador do QA já estava sendo fechado. Em cada etapa o gráfico continuou igual à API naquele momento.
+
+## Bugs
+
+Nenhum bug encontrado.
 
 ## Finalização (PO)
 
