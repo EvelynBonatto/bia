@@ -105,9 +105,9 @@ pronta para aceite
 - [x] Registrar na task o que foi feito e as evidências
 
 ### 2ª entrega (local, aguardando OK da usuária para registrar)
-- [ ] Confirmar que está no branch `ia-main` antes de iniciar
-- [ ] Fazer commit e push no branch `ia-main` (task reaberta em `doing/` + sequencial)
-- [ ] Criar o branch `chore/007-mcp-agentes` a partir de `ia-main`
+- [x] Confirmar que está no branch `ia-main` antes de iniciar
+- [x] Fazer commit e push no branch `ia-main` (task reaberta em `doing/` + sequencial)
+- [x] Criar o branch `chore/007-mcp-agentes` a partir de `ia-main`
 - [x] (dev) Declarar o `shadcn` no cabeçalho de `.claude/agents/dev.md`
 - [x] (dev) Validar uma consulta ao registry do shadcn pelo MCP
 - [x] Declarar o `playwright` no cabeçalho de `.claude/agents/qa.md`
@@ -146,7 +146,7 @@ pronta para aceite
 
 ## Entrega Dev — shadcn no dev (2ª entrega, local)
 
-**Branch:** `ia-main` (só no working tree, sem commit — exceção autorizada pela usuária).
+**Branch:** `chore/007-mcp-agentes` (implementado antes só no working tree do `ia-main`, sem commit — exceção autorizada pela usuária).
 
 ### O que foi feito
 - `.claude/agents/dev.md`, frontmatter: `mcpServers` com o servidor `shadcn` (stdio, sem `env`), no mesmo formato do `devops.md`:
@@ -167,6 +167,7 @@ Cliente MCP stdio (JSON-RPC puro, script no scratchpad) que lê o frontmatter do
 - **Critério 4:** `search_items_in_registries` (`@shadcn`, `"button"`) → 33 itens, o primeiro `button (registry:ui)`; `view_items_in_registries` (`@shadcn/button`) → `Type: registry:ui`, 1 arquivo, dependências `cn, radix-ui`; `get_add_command_for_items` → `npx shadcn@latest add @shadcn/button`.
 - **Critério 5:** `shadcn` em `mcpServers` no frontmatter (YAML validado com `yaml.safe_load`).
 - **Deploy local:** sem erros; `bia`, `database` e `redis` em `Up`; `/api/versao` → `Bia 4.3.0`; `npm test` no container `bia`: 2 suítes, 16 testes passando.
+- Teste da usuária numa sessão nova: o `dev` recebeu as ferramentas nativas e usou `mcp__shadcn__search_items_in_registries` (busca 'button' em `@shadcn`, 33 itens) e `mcp__shadcn__view_items_in_registries` (`@shadcn/button`: `registry:ui`, 1 arquivo, deps `cn` e `radix-ui`).
 
 ### Limitações
 - `components.json` **não é necessário** para consultar o registry e não foi criado (nem na raiz nem em `client/`). A consulta precisa citar o registry (`registries: ["@shadcn"]` ou o prefixo `@shadcn/`); sem o arquivo, `get_project_registries` volta vazio. Isso só muda se o shadcn/ui for instalado no `client/` (fora do escopo).
@@ -175,7 +176,7 @@ Cliente MCP stdio (JSON-RPC puro, script no scratchpad) que lê o frontmatter do
 
 ## Entrega DevOps — Playwright no qa (2ª entrega, local)
 
-**Branch:** `ia-main` (só no working tree, sem commit — exceção autorizada pela usuária).
+**Branch:** `chore/007-mcp-agentes` (implementado antes só no working tree do `ia-main`, sem commit — exceção autorizada pela usuária).
 
 ### O que foi feito
 - `.claude/agents/qa.md`, frontmatter: `mcpServers` com o servidor `playwright` (stdio):

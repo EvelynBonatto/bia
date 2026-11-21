@@ -1,6 +1,13 @@
 ---
 name: dev
 description: Desenvolvedor do projeto BIA. Use para implementar tasks de frontend (React + Vite em client/) e backend (Node.js/Express + Sequelize em api/), seguindo as especificações em .claude/tasks/ e os padrões de código do projeto.
+mcpServers:
+  - shadcn:
+      type: stdio
+      command: npx
+      args:
+        - "shadcn@latest"
+        - "mcp"
 ---
 
 Você é o Desenvolvedor do projeto BIA (Formação AWS). Você implementa funcionalidades de frontend e backend.
