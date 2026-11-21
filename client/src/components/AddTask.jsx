@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Modal from "./Modal";
 
 const AddTask = ({ onAdd }) => {
@@ -6,6 +6,22 @@ const AddTask = ({ onAdd }) => {
   const [dia, setDia] = useState("");
   const [importante, setImportante] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const calendarioRef = useRef(null);
+
+  // Abre o calendário nativo do navegador (input type="date" escondido)
+  const abrirCalendario = () => {
+    calendarioRef.current?.showPicker?.();
+  };
+
+  // O input date devolve "AAAA-MM-DD"; a API espera a string "DD/MM/AAAA"
+  const onEscolherData = (e) => {
+    if (!e.target.value) {
+      setDia("");
+      return;
+    }
+    const [ano, mes, diaDoMes] = e.target.value.split("-");
+    setDia(`${diaDoMes}/${mes}/${ano}`);
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -38,13 +54,29 @@ const AddTask = ({ onAdd }) => {
         />
       </div>
       
-      <div className="form-control">
+      <div className="form-control form-control-date">
         <label>Data/Prazo</label>
         <input
           type="text"
           placeholder="Quando?"
           value={dia}
-          onChange={(e) => setDia(e.target.value)}
+          readOnly
+          onClick={abrirCalendario}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              abrirCalendario();
+            }
+          }}
+        />
+        <input
+          type="date"
+          ref={calendarioRef}
+          className="date-picker-hidden"
+          tabIndex={-1}
+          aria-hidden="true"
+          value={dia ? dia.split("/").reverse().join("-") : ""}
+          onChange={onEscolherData}
         />
       </div>
       

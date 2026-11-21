@@ -53,7 +53,7 @@ Como **usuário da BIA**, quero **escolher a data/prazo da tarefa em um calendá
 
 ## Status
 
-aberta
+pronta para aceite
 
 ---
 
@@ -63,17 +63,39 @@ aberta
 
 - [x] Confirmar que está no branch `ia-main` antes de iniciar
 - [x] Mover a task para `.claude/tasks/doing/`
-- [ ] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Entrar no worktree da task, confirmar o branch e rodar `git merge --ff-only ia-main`
-- [ ] Trocar o campo "Data/Prazo" por um seletor com calendário (em `client/`)
-- [ ] Converter a data escolhida para a string `DD/MM/AAAA` antes de enviar para a API
-- [ ] Manter o campo opcional e vazio após o cadastro
-- [ ] Garantir que backend e banco não foram alterados
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
-- [ ] Mudar o status para `pronta para aceite`
-- [ ] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+- [x] Fazer commit e push no branch `ia-main` (task + sequencial)
+- [x] Entrar no worktree da task, confirmar o branch e rodar `git merge --ff-only ia-main`
+- [x] Trocar o campo "Data/Prazo" por um seletor com calendário (em `client/`)
+- [x] Converter a data escolhida para a string `DD/MM/AAAA` antes de enviar para a API
+- [x] Manter o campo opcional e vazio após o cadastro
+- [x] Garantir que backend e banco não foram alterados
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Mudar o status para `pronta para aceite`
+- [x] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+
+## Implementação (Dev)
+
+**O que foi feito** (só `client/`):
+- `client/src/components/AddTask.jsx`: o campo "Data/Prazo" virou um input de texto `readOnly` (placeholder "Quando?"). Ao clicar nele (ou apertar Enter/Espaço), o calendário nativo do navegador abre (`showPicker()` de um `<input type="date">` invisível). O dia escolhido (`AAAA-MM-DD`) é convertido para a string `DD/MM/AAAA` e mostrado no campo; é essa string que vai em `dia_atividade`.
+- `client/src/index.css`: classes `.form-control-date` e `.date-picker-hidden` (esconde o input date e deixa o cursor de clique no campo).
+- Sem nova dependência. Sem migration e sem mudança em `api/`, `database/` e `config/`.
+- Sem data escolhida, o comportamento é o mesmo de antes (envia a data de hoje, `toLocaleDateString('pt-BR')`). O campo volta vazio após o cadastro (`setDia("")`, já existente).
+- Motivo do input date invisível: com o `<input type="date">` visível, o formato mostrado muda conforme o idioma do navegador (em inglês fica `MM/DD/AAAA`). Do jeito escolhido, o campo sempre mostra `DD/MM/AAAA`.
+
+**Evidências:**
+- Deploy local feito de dentro do worktree, com o mesmo nome de projeto compose da pasta principal (`docker compose -p bia-multi-agentic ...`) para reaproveitar o banco. `curl http://localhost:3001/api/versao` → `Bia 4.3.0`.
+- `npm test` → 2 suítes, 16 testes passando.
+- `git diff ia-main -- api database config` → vazio.
+- Teste em navegador headless (Chromium, idioma `en-US`):
+  - campo `readOnly: true`; o clique no campo chama `showPicker` (calendário aberto: `true`)
+  - escolhido 2026-11-20 → campo mostra `20/11/2026`
+  - body do POST: `{"titulo":"teste ui dev 008","dia_atividade":"20/11/2026","importante":true}`
+  - campo depois do cadastro: `""`; a lista mostra `📅 20/11/2026`
+- A tarefa que já existia (`"Tarefa criada via Playwright"`, `20/11/2026`) continua sendo listada igual. Os dados de teste foram removidos.
+
+**Para o QA:** o input date fica invisível, então no Playwright a escolha do dia pode ser simulada com `locator('input[type=date]').fill('AAAA-MM-DD', { force: true })`. Também dá para clicar no campo e usar o calendário de verdade (modo headed).
 
 ## Checklist de Atividades (QA)
 
