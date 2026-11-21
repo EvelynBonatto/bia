@@ -5,6 +5,7 @@ Só libera os comandos da lista abaixo. Todo o resto é bloqueado (exit 2).
 Qualquer erro no próprio hook também bloqueia (fail closed).
 """
 import json
+import os
 import shlex
 import sys
 
@@ -68,6 +69,25 @@ def main():
     checar_metacaracteres(cmd)
     tokens = shlex.split(cmd)
     prog = tokens[0]
+
+    # git -C <pasta>: só para o worktree de uma task (.claude/worktrees/<nome>).
+    # O resto do comando passa pelas mesmas regras abaixo.
+    if prog == "git" and len(tokens) > 1 and tokens[1].startswith("-C"):
+        if tokens[1] == "-C":          # git -C <pasta> <comando>
+            pasta = tokens[2] if len(tokens) > 2 else ""
+            resto = tokens[3:]
+        else:                          # git -C<pasta> <comando>
+            pasta = tokens[1][2:]
+            resto = tokens[2:]
+        if not pasta:
+            bloquear("git -C sem pasta")
+        projeto = os.environ.get("CLAUDE_PROJECT_DIR") or dados.get("cwd") or os.getcwd()
+        worktrees = os.path.realpath(os.path.join(projeto, ".claude", "worktrees"))
+        alvo = os.path.realpath(os.path.join(projeto, pasta))
+        if os.path.dirname(alvo) != worktrees:
+            bloquear("git -C só é permitido no worktree de uma task (.claude/worktrees/<nome>)")
+        tokens = ["git"] + resto
+
     sub = tokens[1] if len(tokens) > 1 else None
 
     if (prog, None) in PERMITIDOS:
