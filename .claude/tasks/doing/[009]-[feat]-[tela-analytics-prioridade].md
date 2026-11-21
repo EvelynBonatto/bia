@@ -60,28 +60,49 @@ Como **usuário da BIA**, quero **ver um gráfico com a quantidade de tarefas po
 
 ## Status
 
-aberta
+pronta para aceite
 
 ---
+
+## Implementação (Dev)
+
+**O que foi feito (somente `client/`):**
+- Base do shadcn/ui: Tailwind CSS v4 (`@tailwindcss/vite`) **sem o preflight** (para não mudar o visual atual), alias `@/` → `src/` (`vite.config.js` + `jsconfig.json`), `components.json`, `src/lib/utils.js` (`cn`) e `src/tailwind.css` (cores do shadcn ligadas às variáveis de tema da BIA).
+- Componente de gráfico do shadcn/ui adicionado via CLI (`npx shadcn add chart`) → `src/components/ui/chart.jsx` (usa `recharts`; `react-is` instalado como peer dependency).
+- `src/components/AnalyticsBox.jsx`: box clicável 📊 "Ver Analytics" / "Visualize suas tarefas por prioridade" / →, colocada em `App.jsx` entre o `AddTask` e a lista.
+- `src/components/Analytics.jsx` + rota `/analytics`: busca `/api/tarefas` toda vez que a tela abre e mostra o gráfico de barras ("Importantes" × "Não importantes") com `ChartContainer`/`ChartTooltip`; mensagem "Não há tarefas para exibir" quando a lista está vazia; mensagem de erro se a API falhar; link "← Voltar" para a home.
+- Estilos novos em `src/index.css` (`.analytics-*`), seguindo as variáveis de tema existentes (claro/escuro).
+
+**Evidências:**
+- `npm run build` (client): ok (apenas o aviso de tamanho de chunk do Vite).
+- `npm test`: 2 suites, 16 testes passando.
+- Deploy local (`docker compose down && build && up -d`, de dentro do worktree): `curl /api/versao` → `Bia 4.3.0`; `GET /analytics` → HTTP 200.
+- `git diff ia-main -- api database config`: vazio (sem backend nem migration).
+- Teste no navegador (Playwright headless, script temporário):
+  - Home: box com o texto "📊 Ver Analytics Visualize suas tarefas por prioridade →", logo depois do formulário (`.add-form`) e antes da lista.
+  - Clique na box → `http://localhost:3001/analytics`; eixo X "Importantes" e "Não importantes".
+  - `/api/tarefas` com 2 importantes; criada 1 não importante via API → barras com alturas proporcionais 2:1 (101px / 51px). Tarefa de teste removida em seguida.
+  - `/api/tarefas` simulada vazia → "Não há tarefas para exibir 📊", sem erros de JavaScript.
+  - "← Voltar" → volta para `/` com o formulário carregado; nenhum erro de JavaScript.
 
 ## Checklist de Atividades (Dev)
 
 > **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 
-- [ ] Confirmar que está no branch `ia-main` antes de iniciar
-- [ ] Mover a task para `.claude/tasks/doing/`
-- [ ] Fazer commit e push no branch `ia-main` (task + sequencial)
-- [ ] Entrar no worktree da task, confirmar o branch e rodar `git merge --ff-only ia-main`
-- [ ] Adicionar o componente de gráfico do shadcn/ui em `client/` (pode usar o MCP do shadcn)
-- [ ] Criar a box "Ver Analytics" na home, entre o formulário e a lista
-- [ ] Criar a tela/rota de Analytics com o gráfico de barras por prioridade
-- [ ] Tratar o caso sem tarefas e incluir o link de voltar para a home
-- [ ] Garantir que backend e banco não foram alterados
-- [ ] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
-- [ ] Validar rota `/api/versao` respondendo corretamente
-- [ ] Aplicação buildando sem erros
-- [ ] Mudar o status para `pronta para aceite`
-- [ ] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
+- [x] Confirmar que está no branch `ia-main` antes de iniciar
+- [x] Mover a task para `.claude/tasks/doing/`
+- [x] Fazer commit e push no branch `ia-main` (task + sequencial)
+- [x] Entrar no worktree da task, confirmar o branch e rodar `git merge --ff-only ia-main`
+- [x] Adicionar o componente de gráfico do shadcn/ui em `client/` (pode usar o MCP do shadcn)
+- [x] Criar a box "Ver Analytics" na home, entre o formulário e a lista
+- [x] Criar a tela/rota de Analytics com o gráfico de barras por prioridade
+- [x] Tratar o caso sem tarefas e incluir o link de voltar para a home
+- [x] Garantir que backend e banco não foram alterados
+- [x] Executar deploy local (`docker compose down && docker compose build && docker compose up -d`)
+- [x] Validar rota `/api/versao` respondendo corretamente
+- [x] Aplicação buildando sem erros
+- [x] Mudar o status para `pronta para aceite`
+- [x] Ao concluir, informar que a task precisa ser passada para o **QA** validar e depois para o **PO** encerrar
 
 ## Checklist de Atividades (QA)
 

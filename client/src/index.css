@@ -456,6 +456,70 @@ footer {
   margin: 0;
 }
 
+/* Analytics - box da home */
+.analytics-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.analytics-box:hover {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow);
+}
+
+.analytics-box-icon {
+  font-size: 1.5rem;
+}
+
+.analytics-box-text {
+  flex: 1;
+}
+
+.analytics-box-text h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.analytics-box-text p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.analytics-box-arrow {
+  font-size: 1.25rem;
+  color: var(--accent-primary);
+}
+
+/* Analytics - tela */
+.analytics-header {
+  margin-bottom: 1.5rem;
+}
+
+.analytics-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.analytics-header p,
+.analytics-message {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.analytics-chart {
+  width: 100%;
+  max-height: 320px;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .app {

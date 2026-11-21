@@ -1,0 +1,26 @@
+/*
+  Tailwind CSS v4 (base do shadcn/ui).
+  Sem o "preflight" (reset de estilos) para não alterar o visual atual da BIA:
+  importamos apenas o tema e as classes utilitárias.
+*/
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Cores usadas pelos componentes do shadcn/ui, ligadas às variáveis da BIA */
+:root,
+[data-theme] {
+  --background: var(--bg-card, #ffffff);
+  --foreground: var(--text-primary, #111111);
+  --muted-foreground: var(--text-secondary, #666666);
+  --border: var(--border-color, #e5e5e5);
+  --muted: var(--bg-secondary, #f5f5f5);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+}

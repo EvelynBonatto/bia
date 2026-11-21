@@ -10,6 +10,8 @@ import Modal from "./components/Modal.jsx";
 import About from "./components/About.jsx";
 import Versao from "./components/Versao.jsx";
 import DebugLogs from "./components/DebugLogs.jsx";
+import AnalyticsBox from "./components/AnalyticsBox.jsx";
+import Analytics from "./components/Analytics.jsx";
 
 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
@@ -210,6 +212,7 @@ function AppContent() {
   const HomePage = () => (
     <>
       <AddTask onAdd={addTask} />
+      <AnalyticsBox />
       {tasks.length > 0 ? (
         <Tasks
           tasks={tasks}
@@ -247,6 +250,7 @@ function AppContent() {
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<About />} />
             <Route path="/versao" element={<Versao />} />
+            <Route path="/analytics" element={<Analytics />} />
           </Routes>
           <Footer />
         </div>
