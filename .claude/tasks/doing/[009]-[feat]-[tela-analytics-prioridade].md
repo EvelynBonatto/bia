@@ -68,8 +68,8 @@ aberta
 
 > **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 
-- [ ] Confirmar que está no branch `ia-main` antes de iniciar
-- [ ] Mover a task para `.claude/tasks/doing/`
+- [x] Confirmar que está no branch `ia-main` antes de iniciar
+- [x] Mover a task para `.claude/tasks/doing/`
 - [ ] Fazer commit e push no branch `ia-main` (task + sequencial)
 - [ ] Entrar no worktree da task, confirmar o branch e rodar `git merge --ff-only ia-main`
 - [ ] Adicionar o componente de gráfico do shadcn/ui em `client/` (pode usar o MCP do shadcn)
