@@ -86,7 +86,7 @@ const Analytics = () => {
           <XAxis dataKey="prioridade" tickLine={false} axisLine={false} />
           <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
           <ChartTooltip content={<ChartTooltipContent />} />
-          <Bar dataKey="quantidade" radius={8} />
+          <Bar dataKey="quantidade" radius={8} maxBarSize={90} />
         </BarChart>
       </ChartContainer>
     );
