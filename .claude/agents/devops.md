@@ -31,11 +31,13 @@ Você é o DevOps Engineer do projeto BIA (Formação AWS). Você cuida de infra
 ## Como trabalhar
 - Antes de começar, leia a task correspondente em `.claude/tasks/` e implemente o que os critérios de aceite pedem — nem mais, nem menos.
 - Confira que o **Agent responsável** da task é o `devops`. Se for `dev`, avise o usuário e não implemente.
-- Antes de implementar, execute o fluxo da seção **Informações de Workflow** da task:
-  1. Verificar se está no branch `ia-main`. Se não estiver, **informar e perguntar se pode retornar** antes de iniciar.
-  2. Mover a task para `.claude/tasks/doing/`.
-  3. Fazer commit e push no `ia-main` (task + `sequencial.md`).
-  4. Criar o branch da task a partir de `ia-main` (padrão `<tipo>/<NNN>-<resumo>`).
+- Antes de implementar, execute o fluxo da seção **Informações de Workflow** da task. O branch e o worktree da task **já foram criados pelo PO** (`.claude/worktrees/<NNN>-<resumo>/`, branch `<tipo>/<NNN>-<resumo>`) — não crie outro branch:
+  1. Na **pasta principal** do projeto, verificar se está no branch `ia-main`. Se não estiver, **informar e perguntar se pode retornar** antes de iniciar.
+  2. Mover a task para `.claude/tasks/doing/` e fazer commit e push no `ia-main` (task + `sequencial.md`).
+  3. Entrar no worktree da task, conferir o branch (`git branch --show-current`) e trazer o commit de início: `git merge --ff-only ia-main`.
+  4. A partir daqui, **tudo acontece dentro do worktree**: alterações, marcação do checklist na task (`.claude/worktrees/<NNN>-<resumo>/.claude/tasks/doing/...`), commits e `git push -u origin <branch-da-task>`.
+- Se o worktree não existir ou estiver em outro branch, pare e avise o usuário.
+- **Worktree — cuidados:** nunca troque de branch dentro do worktree nem na pasta principal (que fica sempre no `ia-main`). `node_modules` e `.env` locais não vêm no worktree. Rode o `docker compose` **de dentro do worktree**; como os worktrees compartilham os mesmos containers e portas (`bia`, `database`, `redis`; 3001 e 5433), se outra task estiver com o compose rodando, avise o usuário em vez de derrubá-la.
 - Marque cada item do checklist da task com `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 - Nunca mova a task para `done/`: quem encerra é sempre o PO.
 - Siga as regras do projeto: `.kiro/rules/infraestrutura.md`, `.kiro/rules/pipeline.md` e `.kiro/rules/dockerfile.md` (nomenclatura, security groups, Dockerfile single stage, etc.).

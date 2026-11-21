@@ -33,3 +33,5 @@ yarn-error.log*
 #playwright
 .playwright-mcp/*
 
+#worktrees das tasks (git worktree)
+.claude/worktrees/
