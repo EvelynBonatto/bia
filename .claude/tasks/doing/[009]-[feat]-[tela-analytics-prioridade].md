@@ -60,7 +60,7 @@ Como **usuário da BIA**, quero **ver um gráfico com a quantidade de tarefas po
 
 ## Status
 
-validada pelo QA
+pronta para aceite
 
 ---
 
@@ -84,6 +84,10 @@ validada pelo QA
   - `/api/tarefas` com 2 importantes; criada 1 não importante via API → barras com alturas proporcionais 2:1 (101px / 51px). Tarefa de teste removida em seguida.
   - `/api/tarefas` simulada vazia → "Não há tarefas para exibir 📊", sem erros de JavaScript.
   - "← Voltar" → volta para `/` com o formulário carregado; nenhum erro de JavaScript.
+
+**Ajuste pedido pelo usuário (após a validação do QA):** barra "Importantes" na cor alaranjada (`#f97316`); "Não importantes" continua na cor de destaque do tema (azul). Cores definidas no `chartConfig` do shadcn/ui (`importantes` / `naoImportantes`) e aplicadas por barra via `fill` nos dados.
+- Evidência (Playwright headless): cor computada das barras — tema claro `rgb(249, 115, 22)` / `rgb(59, 130, 246)`; tema escuro `rgb(249, 115, 22)` / `rgb(96, 165, 250)`. Deploy local ok (`/api/versao` → `Bia 4.3.0`).
+- Status voltou para `pronta para aceite` para o QA reconferir o ajuste visual.
 
 ## Checklist de Atividades (Dev)
 

@@ -13,6 +13,13 @@ const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
 const chartConfig = {
   quantidade: {
     label: "Tarefas",
+  },
+  importantes: {
+    label: "Importantes",
+    color: "#f97316", // alaranjado
+  },
+  naoImportantes: {
+    label: "Não importantes",
     color: "var(--accent-primary)",
   },
 };
@@ -48,8 +55,8 @@ const Analytics = () => {
   const naoImportantes = tasks.length - importantes;
 
   const chartData = [
-    { prioridade: "Importantes", quantidade: importantes },
-    { prioridade: "Não importantes", quantidade: naoImportantes },
+    { prioridade: "Importantes", quantidade: importantes, fill: "var(--color-importantes)" },
+    { prioridade: "Não importantes", quantidade: naoImportantes, fill: "var(--color-naoImportantes)" },
   ];
 
   const renderConteudo = () => {
@@ -79,7 +86,7 @@ const Analytics = () => {
           <XAxis dataKey="prioridade" tickLine={false} axisLine={false} />
           <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
           <ChartTooltip content={<ChartTooltipContent />} />
-          <Bar dataKey="quantidade" fill="var(--color-quantidade)" radius={8} />
+          <Bar dataKey="quantidade" radius={8} />
         </BarChart>
       </ChartContainer>
     );
