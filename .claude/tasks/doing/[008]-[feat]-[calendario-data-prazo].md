@@ -53,7 +53,7 @@ Como **usuário da BIA**, quero **escolher a data/prazo da tarefa em um calendá
 
 ## Status
 
-validada pelo QA
+pronta para aceite
 
 ---
 
@@ -95,7 +95,23 @@ validada pelo QA
   - campo depois do cadastro: `""`; a lista mostra `📅 20/11/2026`
 - A tarefa que já existia (`"Tarefa criada via Playwright"`, `20/11/2026`) continua sendo listada igual. Os dados de teste foram removidos.
 
-**Para o QA:** o input date fica invisível, então no Playwright a escolha do dia pode ser simulada com `locator('input[type=date]').fill('AAAA-MM-DD', { force: true })`. Também dá para clicar no campo e usar o calendário de verdade (modo headed).
+### Ajuste pedido pelo usuário: calendário com as cores da BIA
+
+Depois da primeira validação do QA, a usuária pediu que o calendário combinasse com as cores da aplicação. O popup do calendário nativo do navegador (`showPicker()`) não aceita estilo por CSS, então ele foi trocado por um componente próprio, sem nova dependência:
+- **Novo `client/src/components/Calendario.jsx`:** mostra mês e ano, com setas ‹ › para trocar de mês. A grade vai de Dom a Sáb. Clicar num dia devolve a string `DD/MM/AAAA` e fecha o calendário. Também fecha ao clicar fora ou apertar Esc. O dia de hoje fica com borda, e o dia escolhido fica preenchido.
+- **`AddTask.jsx`:** o input `type="date"` invisível e o `showPicker()` saíram. Clicar no campo (ou apertar Enter/Espaço) abre e fecha o `<Calendario>`. O campo continua `readOnly` e volta vazio após o cadastro.
+- **`index.css`:** as classes `.date-picker-hidden` saíram e entraram as classes `.calendario*`. Todas usam as variáveis do tema (`--bg-card`, `--bg-secondary`, `--border-color`, `--text-primary`, `--text-secondary`, `--accent-primary`), então o calendário acompanha o modo claro e o escuro.
+
+**Evidências do ajuste:**
+- Teste num container temporário só com o código da 008, na porta 3008. Os containers da porta 3001 estavam com a task 009, então não foram derrubados. O teste foi feito em Chromium headless com idioma `en-US`:
+  - ao clicar no campo, `.calendario` aparece com o título `Novembro 2026`
+  - clicar no dia 20 faz o campo mostrar `20/11/2026` e o calendário fecha
+  - ao reabrir, o dia selecionado é o `20`; a seta › leva para `Dezembro 2026`
+  - o calendário fecha ao clicar fora e ao apertar Esc
+- Capturas de tela nos temas claro e escuro conferidas: fundo, borda, texto e destaque em azul seguem o tema da BIA.
+- O container e a imagem temporários foram removidos.
+
+**Para o QA (revalidação):** a validação abaixo vale para o commit `20d1197`, a versão com o calendário nativo. É preciso revalidar os critérios 1, 2, 3 e 5 com o calendário novo. No Playwright, o dia agora é escolhido clicando no botão de verdade, por exemplo `page.locator('.calendario-dia', { hasText: /^20$/ }).click()`. Não é mais preciso usar `force`.
 
 ## Checklist de Atividades (QA)
 

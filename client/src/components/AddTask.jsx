@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
+import Calendario from "./Calendario";
 import Modal from "./Modal";
 
 const AddTask = ({ onAdd }) => {
@@ -6,22 +7,7 @@ const AddTask = ({ onAdd }) => {
   const [dia, setDia] = useState("");
   const [importante, setImportante] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const calendarioRef = useRef(null);
-
-  // Abre o calendário nativo do navegador (input type="date" escondido)
-  const abrirCalendario = () => {
-    calendarioRef.current?.showPicker?.();
-  };
-
-  // O input date devolve "AAAA-MM-DD"; a API espera a string "DD/MM/AAAA"
-  const onEscolherData = (e) => {
-    if (!e.target.value) {
-      setDia("");
-      return;
-    }
-    const [ano, mes, diaDoMes] = e.target.value.split("-");
-    setDia(`${diaDoMes}/${mes}/${ano}`);
-  };
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -39,6 +25,7 @@ const AddTask = ({ onAdd }) => {
 
     setTitulo("");
     setDia("");
+    setMostrarCalendario(false);
     setImportante(true);
   };
 
@@ -61,23 +48,24 @@ const AddTask = ({ onAdd }) => {
           placeholder="Quando?"
           value={dia}
           readOnly
-          onClick={abrirCalendario}
+          onClick={() => setMostrarCalendario(!mostrarCalendario)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              abrirCalendario();
+              setMostrarCalendario(!mostrarCalendario);
             }
           }}
         />
-        <input
-          type="date"
-          ref={calendarioRef}
-          className="date-picker-hidden"
-          tabIndex={-1}
-          aria-hidden="true"
-          value={dia ? dia.split("/").reverse().join("-") : ""}
-          onChange={onEscolherData}
-        />
+        {mostrarCalendario && (
+          <Calendario
+            dataSelecionada={dia}
+            onEscolher={(data) => {
+              setDia(data);
+              setMostrarCalendario(false);
+            }}
+            onFechar={() => setMostrarCalendario(false)}
+          />
+        )}
       </div>
       
       <div className="form-control-check">
