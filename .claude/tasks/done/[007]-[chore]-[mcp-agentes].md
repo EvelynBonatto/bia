@@ -85,7 +85,7 @@ Como **aluna da Formação AWS**, quero **que cada agente tenha os seus próprio
 
 ## Status
 
-pronta para aceite
+aceita
 
 ---
 
@@ -105,9 +105,9 @@ pronta para aceite
 - [x] Registrar na task o que foi feito e as evidências
 
 ### 2ª entrega (local, aguardando OK da usuária para registrar)
-- [ ] Confirmar que está no branch `ia-main` antes de iniciar
-- [ ] Fazer commit e push no branch `ia-main` (task reaberta em `doing/` + sequencial)
-- [ ] Criar o branch `chore/007-mcp-agentes` a partir de `ia-main`
+- [x] Confirmar que está no branch `ia-main` antes de iniciar
+- [x] Fazer commit e push no branch `ia-main` (task reaberta em `doing/` + sequencial)
+- [x] Criar o branch `chore/007-mcp-agentes` a partir de `ia-main`
 - [x] (dev) Declarar o `shadcn` no cabeçalho de `.claude/agents/dev.md`
 - [x] (dev) Validar uma consulta ao registry do shadcn pelo MCP
 - [x] Declarar o `playwright` no cabeçalho de `.claude/agents/qa.md`
@@ -124,15 +124,15 @@ pronta para aceite
 
 > **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 
-- [ ] Confirmar que está no branch da task (`git branch --show-current`)
-- [ ] Validar cada critério de aceite da 2ª entrega (4 a 9) com evidência objetiva
-- [ ] Rodar a suíte de testes e registrar o resultado
-- [ ] Remover os dados de teste criados durante a validação
-- [ ] Testes no navegador: usar o MCP do Playwright (objeto da task) e confirmar que nenhum navegador ficou aberto ao final
-- [ ] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
-- [ ] Mudar o status para `validada pelo QA` ou `com bugs`
-- [ ] Fazer commit e push no branch da task
-- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+- [x] Confirmar que está no branch da task (`git branch --show-current`)
+- [x] Validar cada critério de aceite da 2ª entrega (4 a 9) com evidência objetiva
+- [x] Rodar a suíte de testes e registrar o resultado
+- [x] Remover os dados de teste criados durante a validação (nenhum dado foi criado: validação só de leitura)
+- [x] Testes no navegador: usar o MCP do Playwright (objeto da task) e confirmar que nenhum navegador ficou aberto ao final
+- [x] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
+- [x] Mudar o status para `validada pelo QA` ou `com bugs`
+- [x] Fazer commit e push no branch da task
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
 
 ## Entrega DevOps — 1ª entrega (PR #9)
 
@@ -146,7 +146,7 @@ pronta para aceite
 
 ## Entrega Dev — shadcn no dev (2ª entrega, local)
 
-**Branch:** `ia-main` (só no working tree, sem commit — exceção autorizada pela usuária).
+**Branch:** `chore/007-mcp-agentes` (implementado antes só no working tree do `ia-main`, sem commit — exceção autorizada pela usuária).
 
 ### O que foi feito
 - `.claude/agents/dev.md`, frontmatter: `mcpServers` com o servidor `shadcn` (stdio, sem `env`), no mesmo formato do `devops.md`:
@@ -167,6 +167,7 @@ Cliente MCP stdio (JSON-RPC puro, script no scratchpad) que lê o frontmatter do
 - **Critério 4:** `search_items_in_registries` (`@shadcn`, `"button"`) → 33 itens, o primeiro `button (registry:ui)`; `view_items_in_registries` (`@shadcn/button`) → `Type: registry:ui`, 1 arquivo, dependências `cn, radix-ui`; `get_add_command_for_items` → `npx shadcn@latest add @shadcn/button`.
 - **Critério 5:** `shadcn` em `mcpServers` no frontmatter (YAML validado com `yaml.safe_load`).
 - **Deploy local:** sem erros; `bia`, `database` e `redis` em `Up`; `/api/versao` → `Bia 4.3.0`; `npm test` no container `bia`: 2 suítes, 16 testes passando.
+- Teste da usuária numa sessão nova: o `dev` recebeu as ferramentas nativas e usou `mcp__shadcn__search_items_in_registries` (busca 'button' em `@shadcn`, 33 itens) e `mcp__shadcn__view_items_in_registries` (`@shadcn/button`: `registry:ui`, 1 arquivo, deps `cn` e `radix-ui`).
 
 ### Limitações
 - `components.json` **não é necessário** para consultar o registry e não foi criado (nem na raiz nem em `client/`). A consulta precisa citar o registry (`registries: ["@shadcn"]` ou o prefixo `@shadcn/`); sem o arquivo, `get_project_registries` volta vazio. Isso só muda se o shadcn/ui for instalado no `client/` (fora do escopo).
@@ -175,7 +176,7 @@ Cliente MCP stdio (JSON-RPC puro, script no scratchpad) que lê o frontmatter do
 
 ## Entrega DevOps — Playwright no qa (2ª entrega, local)
 
-**Branch:** `ia-main` (só no working tree, sem commit — exceção autorizada pela usuária).
+**Branch:** `chore/007-mcp-agentes` (implementado antes só no working tree do `ia-main`, sem commit — exceção autorizada pela usuária).
 
 ### O que foi feito
 - `.claude/agents/qa.md`, frontmatter: `mcpServers` com o servidor `playwright` (stdio):
@@ -216,11 +217,26 @@ O override `.claude/mcp/postgres-overrides.txt` foi verificado como necessário.
 
 ### 2ª entrega
 
-_(preenchido pelo QA)_
+Validação feita no branch `chore/007-mcp-agentes` (`7a3b8d0`), em 20/11/2026.
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 4 | MCP do shadcn no dev | ✅ | Cliente MCP stdio próprio (scratchpad), lendo o frontmatter do `dev.md` (`npx shadcn@latest mcp`, a partir da raiz): `initialize` → `{"name":"shadcn","version":"1.0.0"}`, protocolo `2024-11-05`; 7 ferramentas. `search_items_in_registries` (`@shadcn`, `"button"`) → `Found 33 items`, o primeiro `button (registry:ui)`; `view_items_in_registries` (`@shadcn/button`) → `Type: registry:ui`, `Files: 1`, `Dependencies: cn, radix-ui`; servidor terminou com `exit 0`. Confirmado também pela usuária numa sessão nova do `dev`, com as ferramentas nativas `mcp__shadcn__search_items_in_registries` e `mcp__shadcn__view_items_in_registries` (mesmos resultados, ver "Entrega Dev") |
+| 5 | Configuração na definição do dev | ✅ | Frontmatter de `.claude/agents/dev.md` com `mcpServers` → `shadcn` (`type: stdio`, `command: npx`, `args: ["shadcn@latest", "mcp"]`); YAML válido (`yaml.safe_load`) |
+| 6 | MCP do Playwright no qa | ✅ | Ferramentas **nativas** do agente `qa` nesta sessão: `mcp__playwright__browser_navigate` (`http://localhost:3001`) → `Page Title: BIA + IA`; `mcp__playwright__browser_snapshot` → heading "BIA", link "Versão", campo "O que você precisa fazer?", botão "Add New Task", tarefa "Tarefa criada via Playwright" (📅 20/11/2026), link "Sobre a BIA"; `mcp__playwright__browser_console_messages` → `API GET - 200 http://localhost:3001/api/tarefas`, 0 erros. Só leitura (nenhum clique nem formulário) |
+| 7 | Navegador encerrado ao final | ✅ | Durante o teste, `pgrep -af ms-playwright` mostrava o `chromium-1255/chrome-linux64/chrome --headless` (11 processos). Após `mcp__playwright__browser_close` → `No open tabs`; `pgrep -af ms-playwright` → nenhum processo (rc=1). `docker ps` → só `bia`, `database` e `redis`; nenhum `qa-browser` (nem parado) |
+| 8 | Configuração na definição do qa | ✅ | Frontmatter de `.claude/agents/qa.md` com `mcpServers` → `playwright` (`npx @playwright/mcp@latest --browser chromium --headless --isolated --output-dir /tmp/playwright-mcp`); YAML válido. Subseção "MCP do Playwright" explica quando usar (telas e fluxos; `curl` para a API), `browser_install`, `browser_close` e a conferência com `pgrep` |
+| 9 | Raiz, PO e aplicação sem alteração | ✅ | `git diff --stat 80d6d7c -- .mcp.json .claude/agents/po.md package.json client/ .kiro/` → vazio. Diff total do branch: `M dev.md`, `M qa.md`, `A doing/[007]-[chore]-[mcp-agentes].md`, `D done/[007]-[chore]-[mcp-agente-devops].md` (a remoção é a própria task 007 reaberta e renomeada) |
+
+**Testes e aplicação:** `docker exec bia npm test` → `Test Suites: 2 passed`, `Tests: 16 passed`. `curl /api/versao` → `Bia 4.3.0`.
+
+**Observações (não são bugs da entrega):**
+- O processo do servidor `playwright-mcp` (o `node`, não o navegador) continua vivo enquanto a sessão do agente está aberta, como esperado; o que fecha com `browser_close` é o Chromium. O encerramento do servidor ao fim da sessão foi evidenciado pelo DevOps (`exit 0`) e não pode ser observado de dentro da própria sessão.
+- Dados: o banco local não tem mais a tarefa "Teste QA navegador" citada nas evidências do DevOps; a única tarefa é "Tarefa criada via Playwright" (`uuid 3c233aa0-…`, `createdAt 2026-11-21T00:26:46Z`), criada antes desta validação e fora dela. O QA não criou, alterou nem apagou tarefas (`uuid` e `updatedAt` iguais antes e depois).
 
 ## Bugs
 
-_(preenchido pelo QA, se houver)_
+Nenhum bug encontrado na 2ª entrega.
 
 ## Finalização (PO)
 
@@ -234,17 +250,32 @@ _(preenchido pelo QA, se houver)_
 
 ### 2ª entrega
 
-- [ ] Verificar se tudo foi implementado conforme o escopo técnico
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
-- [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
-  - [ ] Após o OK, confirmar que está no branch `chore/007-mcp-agentes` (não em `ia-main` nem em `main`)
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
-  - [ ] Fazer commit e push final no branch da task
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
+  - [x] Após o OK, confirmar que está no branch `chore/007-mcp-agentes` (não em `ia-main` nem em `main`)
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
+  - [x] Fazer commit e push final no branch da task
   - [ ] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[007] - chore: MCPs dos agentes (shadcn no dev e Playwright no qa)` (rodar `git branch --show-current` imediatamente antes do `gh pr create`), conferindo se o check do workflow passou
   - [ ] Fazer o merge do PR em `ia-main` com **squash**
   - [ ] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
   - [ ] Enviar ao usuário o link do PR e o commit do merge
+
+**Aceite do PO (2ª entrega):**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 4 | MCP do shadcn no dev | ✅ | Teste da usuária numa sessão nova: o `dev` usou as ferramentas nativas `mcp__shadcn__search_items_in_registries` e `mcp__shadcn__view_items_in_registries` (`@shadcn/button`: `registry:ui`, deps `cn` e `radix-ui`); QA confirmou de forma independente |
+| 5 | Configuração na definição do dev | ✅ | Diff do `dev.md` contra `80d6d7c`: só o `shadcn` em `mcpServers` |
+| 6 | MCP do Playwright no qa | ✅ | O `qa` recebeu as ferramentas nativas `mcp__playwright__*`; `browser_navigate` em `http://localhost:3001` → `BIA + IA`, snapshot com o campo de nova tarefa e a lista; console `GET /api/tarefas 200` sem erros |
+| 7 | Navegador encerrado ao final | ✅ | Após `browser_close`, `pgrep -af ms-playwright` vazio; `docker ps` só com `bia`, `database` e `redis` |
+| 8 | Configuração na definição do qa | ✅ | Diff do `qa.md`: `playwright` em `mcpServers` (headless, Chromium do Playwright, saída em `/tmp`) e subseção "MCP do Playwright" |
+| 9 | Raiz, PO e aplicação sem alteração | ✅ | Diff do branch contra `80d6d7c`: só `dev.md`, `qa.md` e a própria task |
+
+**Observações (não bloqueiam o aceite):**
+- A troca da tarefa "Teste QA navegador" por "Tarefa criada via Playwright" no banco local foi feita a pedido da usuária, num teste dela com o `qa` em outra sessão.
+- Segue pendente a decisão da usuária sobre substituir ou manter o `qa-browser` (Selenium); as instruções dele continuam no `qa.md`.
