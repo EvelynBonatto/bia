@@ -53,7 +53,7 @@ Como **usuário da BIA**, quero **escolher a data/prazo da tarefa em um calendá
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -101,19 +101,38 @@ pronta para aceite
 
 > **Obrigatório:** marque cada item `[x]` assim que concluí-lo, durante a execução — não apenas ao final.
 
-- [ ] Confirmar que está no worktree da task e no branch dela (`git branch --show-current` dentro de `.claude/worktrees/008-calendario-data-prazo/`)
-- [ ] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
-- [ ] Rodar a suíte de testes e registrar o resultado
-- [ ] Remover os dados de teste criados durante a validação
-- [ ] Testes no navegador: usar o MCP do Playwright (preferencial) ou o navegador em container (`qa-browser`), conforme o `qa.md`, e confirmar ao final que nenhum navegador ou servidor temporário ficou aberto
-- [ ] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
-- [ ] Mudar o status para `validada pelo QA` ou `com bugs`
-- [ ] Fazer commit e push no branch da task
-- [ ] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
+- [x] Confirmar que está no worktree da task e no branch dela (`git branch --show-current` dentro de `.claude/worktrees/008-calendario-data-prazo/`)
+- [x] Validar cada critério de aceite (Given/When/Then) com evidência objetiva
+- [x] Rodar a suíte de testes e registrar o resultado
+- [x] Remover os dados de teste criados durante a validação
+- [x] Testes no navegador: usar o MCP do Playwright (preferencial) ou o navegador em container (`qa-browser`), conforme o `qa.md`, e confirmar ao final que nenhum navegador ou servidor temporário ficou aberto
+- [x] Preencher a seção **Validação QA** (✅/❌ + evidência por critério) e, se houver, a seção **Bugs**
+- [x] Mudar o status para `validada pelo QA` ou `com bugs`
+- [x] Fazer commit e push no branch da task
+- [x] Ao concluir, informar que a task precisa ser passada para o **PO** encerrar (ou de volta ao agent responsável, se `com bugs`)
 
 ## Validação QA
 
-_(preenchida pelo QA)_
+**Ambiente:** worktree `.claude/worktrees/008-calendario-data-prazo/`, branch `feat/008-calendario-data-prazo`, commit `20d1197`. Na hora do deploy, outra sessão (task 009) subiu os containers `bia`/`database`/`redis` a partir do worktree da 009 (`com.docker.compose.project.working_dir` = `.../009-tela-analytics-prioridade`). Para não derrubar o ambiente da outra task, o QA gerou uma imagem só do código da 008 (`docker build -t bia-qa-008 .`) e rodou um container temporário `bia-qa-008` na porta **3008**, ligado à mesma rede e ao mesmo banco (`curl localhost:3008/api/versao` → `Bia 4.3.0`). Obs.: o bundle do front tem `VITE_API_URL=http://localhost:3001` (Dockerfile), então a tela da 008 (porta 3008) chamou a API da porta 3001. Isso não afeta a validação: a 008 não mexe no backend (diff vazio) e o banco é o mesmo. O container e a imagem temporários foram removidos ao final.
+
+**Navegador:** MCP do Playwright (Chromium headless), num contexto com locale `en-US` (`navigator.language` = `en-US`).
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Calendário ao clicar no campo | ✅ | Campo "Data/Prazo" `readOnly: true`; o `input[type=date]` fica invisível (`isVisible: false`); ao clicar no campo, `showPicker()` foi chamado 1 vez, sem erro (`pickerCalls: 1`, `pickerErr: null`) |
+| 2 | Data escolhida no formato DD/MM/AAAA | ✅ | Escolhido `2026-11-20` no calendário → campo mostra `20/11/2026`, mesmo com navegador em `en-US` |
+| 3 | Data salva como string DD/MM/AAAA | ✅ | Body do POST: `{"titulo":"QA 008 com data","dia_atividade":"20/11/2026","importante":true}`; `GET /api/tarefas` → `"dia_atividade":"20/11/2026"`; a lista mostra `📅 20/11/2026` |
+| 4 | Data continua opcional | ✅ | Só com o título preenchido (Importante desmarcado), a tarefa foi criada: POST `{"titulo":"QA 008 sem data","dia_atividade":"21/11/2026","importante":false}`. É a data de hoje, igual ao comportamento anterior (`toLocaleDateString('pt-BR')`) |
+| 5 | Formulário limpo após cadastrar | ✅ | Depois do cadastro: campo Data/Prazo `""`, input date `""`, Tarefa `""`, Importante volta marcado (`true`) |
+| 6 | Sem mudança no banco e no restante da tela | ✅ | `git diff ia-main -- api database config` → vazio (só mudaram `client/src/components/AddTask.jsx` e `client/src/index.css`). A tarefa que já existia ("Tarefa criada via Playwright") continua com `📅 20/11/2026`. Modal "Campo obrigatório / Por favor, adicione uma descrição para a tarefa" aparece ao enviar sem título. O toggle de prioridade (`PUT /api/tarefas/update_priority/<uuid>`) mudou a classe do card de `task` para `task reminder`. A exclusão (`DELETE /api/tarefas/<uuid>`) tirou os cards da lista. A tela não tem edição de título/data, só o toggle de importante, e ele segue funcionando |
+
+**Testes unitários:** `npm test` → 2 suítes, 16 testes passando.
+
+**Limpeza:** removidas pela tela (DELETE) as tarefas "QA 008 com data", "QA 008 sem data" e a pendente do dev "teste ui dev 008" (`345d34d0-e603-11f1-88e8-c3750aeb996a`). `GET /api/tarefas` final → só "Tarefa criada via Playwright". Navegador do QA fechado (`browser_close`); o Chromium que ainda aparece em `pgrep -af ms-playwright` é de outra instância do `playwright-mcp` (da outra sessão), não do QA. Container `bia-qa-008` parado e imagem removida.
+
+## Bugs
+
+Nenhum bug encontrado.
 
 ## Finalização (PO)
 
