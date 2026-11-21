@@ -85,7 +85,7 @@ Como **aluna da Formação AWS**, quero **que cada agente tenha os seus próprio
 
 ## Status
 
-validada pelo QA
+aceita
 
 ---
 
@@ -250,17 +250,32 @@ Nenhum bug encontrado na 2ª entrega.
 
 ### 2ª entrega
 
-- [ ] Verificar se tudo foi implementado conforme o escopo técnico
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
-- [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
-  - [ ] Após o OK, confirmar que está no branch `chore/007-mcp-agentes` (não em `ia-main` nem em `main`)
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
-  - [ ] Fazer commit e push final no branch da task
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Se tudo estiver ok:
+  - [x] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
+  - [x] Após o OK, confirmar que está no branch `chore/007-mcp-agentes` (não em `ia-main` nem em `main`)
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/` com `git mv`
+  - [x] Fazer commit e push final no branch da task
   - [ ] Abrir o PR contra `ia-main` em `EvelynBonatto/bia` com título `[007] - chore: MCPs dos agentes (shadcn no dev e Playwright no qa)` (rodar `git branch --show-current` imediatamente antes do `gh pr create`), conferindo se o check do workflow passou
   - [ ] Fazer o merge do PR em `ia-main` com **squash**
   - [ ] Voltar para `ia-main`, atualizar (`git pull`), limpar referências (`git fetch --prune`) e apagar o branch local da task
   - [ ] Enviar ao usuário o link do PR e o commit do merge
+
+**Aceite do PO (2ª entrega):**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 4 | MCP do shadcn no dev | ✅ | Teste da usuária numa sessão nova: o `dev` usou as ferramentas nativas `mcp__shadcn__search_items_in_registries` e `mcp__shadcn__view_items_in_registries` (`@shadcn/button`: `registry:ui`, deps `cn` e `radix-ui`); QA confirmou de forma independente |
+| 5 | Configuração na definição do dev | ✅ | Diff do `dev.md` contra `80d6d7c`: só o `shadcn` em `mcpServers` |
+| 6 | MCP do Playwright no qa | ✅ | O `qa` recebeu as ferramentas nativas `mcp__playwright__*`; `browser_navigate` em `http://localhost:3001` → `BIA + IA`, snapshot com o campo de nova tarefa e a lista; console `GET /api/tarefas 200` sem erros |
+| 7 | Navegador encerrado ao final | ✅ | Após `browser_close`, `pgrep -af ms-playwright` vazio; `docker ps` só com `bia`, `database` e `redis` |
+| 8 | Configuração na definição do qa | ✅ | Diff do `qa.md`: `playwright` em `mcpServers` (headless, Chromium do Playwright, saída em `/tmp`) e subseção "MCP do Playwright" |
+| 9 | Raiz, PO e aplicação sem alteração | ✅ | Diff do branch contra `80d6d7c`: só `dev.md`, `qa.md` e a própria task |
+
+**Observações (não bloqueiam o aceite):**
+- A troca da tarefa "Teste QA navegador" por "Tarefa criada via Playwright" no banco local foi feita a pedido da usuária, num teste dela com o `qa` em outra sessão.
+- Segue pendente a decisão da usuária sobre substituir ou manter o `qa-browser` (Selenium); as instruções dele continuam no `qa.md`.
