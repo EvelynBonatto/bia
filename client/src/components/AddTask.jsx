@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Calendario from "./Calendario";
 import Modal from "./Modal";
 
 const AddTask = ({ onAdd }) => {
@@ -6,6 +7,7 @@ const AddTask = ({ onAdd }) => {
   const [dia, setDia] = useState("");
   const [importante, setImportante] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -23,6 +25,7 @@ const AddTask = ({ onAdd }) => {
 
     setTitulo("");
     setDia("");
+    setMostrarCalendario(false);
     setImportante(true);
   };
 
@@ -38,14 +41,31 @@ const AddTask = ({ onAdd }) => {
         />
       </div>
       
-      <div className="form-control">
+      <div className="form-control form-control-date">
         <label>Data/Prazo</label>
         <input
           type="text"
           placeholder="Quando?"
           value={dia}
-          onChange={(e) => setDia(e.target.value)}
+          readOnly
+          onClick={() => setMostrarCalendario(!mostrarCalendario)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setMostrarCalendario(!mostrarCalendario);
+            }
+          }}
         />
+        {mostrarCalendario && (
+          <Calendario
+            dataSelecionada={dia}
+            onEscolher={(data) => {
+              setDia(data);
+              setMostrarCalendario(false);
+            }}
+            onFechar={() => setMostrarCalendario(false)}
+          />
+        )}
       </div>
       
       <div className="form-control-check">
