@@ -53,7 +53,7 @@ Como **usuário da BIA**, quero **escolher a data/prazo da tarefa em um calendá
 
 ## Status
 
-validada pelo QA
+aceita
 
 ---
 
@@ -183,17 +183,28 @@ Nenhum bug encontrado (validação de `20d1197` e revalidação de `e60f66e`).
 
 ## Finalização (PO)
 
-- [ ] Verificar se tudo foi implementado conforme o escopo técnico
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
 - [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
-  - [ ] Após o OK, confirmar que o worktree está no branch `feat/008-calendario-data-prazo`
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/`, dentro do worktree
-  - [ ] Fazer commit e push final no branch da task, dentro do worktree
+  - [x] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
+  - [x] Após o OK, confirmar que o worktree está no branch `feat/008-calendario-data-prazo`
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/`, dentro do worktree
+  - [x] Fazer commit e push final no branch da task, dentro do worktree
   - [ ] Abrir o Pull Request contra `ia-main` em `EvelynBonatto/bia` (conferir o branch imediatamente antes do `gh pr create`)
   - [ ] Fazer o merge do PR em `ia-main` com **squash**
   - [ ] Voltar para `ia-main`, atualizar, limpar referências, remover o worktree e apagar o branch local
   - [ ] Enviar ao usuário o link do PR e o commit do merge
+
+**Aceite do PO:**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Calendário ao clicar no campo | ✅ | QA (`e60f66e`): `.calendario` aparece com "Novembro 2026" e Dom–Sáb; abre também com Enter/Espaço |
+| 2 | Data no formato DD/MM/AAAA | ✅ | Dia 20 → campo `20/11/2026`, com navegador em `en-US` |
+| 3 | Data salva como string | ✅ | POST e `/api/tarefas` com `"dia_atividade":"20/11/2026"`; lista mostra `📅 20/11/2026` |
+| 4 | Data continua opcional | ✅ | Sem data, tarefa criada com a data de hoje, igual ao comportamento anterior |
+| 5 | Formulário limpo após cadastrar | ✅ | Campo `""`, calendário fechado e de volta ao mês atual |
+| 6 | Sem mudança no banco e no restante da tela | ✅ | `git diff ia-main -- api database config` vazio; modal, estrela, exclusão e paginação ok; 16 testes passando |
