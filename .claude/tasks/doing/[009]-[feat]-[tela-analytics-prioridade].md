@@ -60,7 +60,7 @@ Como **usuário da BIA**, quero **ver um gráfico com a quantidade de tarefas po
 
 ## Status
 
-pronta para aceite
+validada pelo QA
 
 ---
 
@@ -142,6 +142,28 @@ pronta para aceite
 **Dados de teste:** as duas tarefas criadas pelo QA ("QA 009 nao importante" `10031090-…` e "QA 009 regressao" `2cb4f370-…`) foram excluídas pela própria UI ao final de cada teste (confirmado nos logs do container: `DELETE` dos dois uuids). Nenhuma tarefa existente foi apagada pelo QA e "Limpar tudo" não foi usado.
 
 **Observação (ambiente, não é bug da entrega):** durante a validação, outro cliente acessou a mesma aplicação em `localhost:3001` ao mesmo tempo (provavelmente a sessão da task 008, que usa os mesmos containers/porta). Os logs do container `bia` mostram, fora das ações do QA, `INSERT`s às 23:34:03, `UPDATE` às 23:34:12, `DELETE` de `09131820-…`, `0925dcd0-…` e `345d34d0-…` ("teste ui dev 008") às 23:34:13 e `DELETE` de `3c233aa0-…` ("Tarefa criada via Playwright") às 23:35:10 UTC, quando o navegador do QA já estava sendo fechado. Em cada etapa o gráfico continuou igual à API naquele momento.
+
+### Revalidação QA (após ajustes visuais `f6712f1` e `ed53b60`)
+
+**Ambiente:** worktree da 009, branch `feat/009-tela-analytics-prioridade`, commit `ed53b60`. Containers `bia`, `database`, `redis` já em execução (não foram reiniciados): `docker inspect bia` → `working_dir` = worktree 009; `client/build/assets/index-BpT6a2OP.js` contém "Ver Analytics", `f97316` e `maxBarSize:90`. `curl /api/versao` → `Bia 4.3.0`. Navegador: MCP do Playwright (Chromium headless, `--isolated`), fechado ao final (`pgrep -af ms-playwright` sem processo do navegador).
+
+| # | Item | Resultado | Evidência |
+|---|------|-----------|-----------|
+| A1 | Barra "Importantes" alaranjada, "Não importantes" na cor de destaque do tema | ✅ | `getComputedStyle(path).fill` das barras: tema claro (`data-theme="light"`) → `rgb(249, 115, 22)` / `rgb(59, 130, 246)`; tema escuro (`data-theme="dark"`) → `rgb(249, 115, 22)` / `rgb(96, 165, 250)`. |
+| A2 | Barras mais finas (largura máx. 90px) | ✅ | Largura medida (`getBoundingClientRect`) das duas barras: `90px` em viewport 1280×720 e também em 1600×900 (não passa de 90px em tela mais larga). |
+| 1 | Box "Ver Analytics" na home | ✅ | Texto do link: "📊 Ver Analytics Visualize suas tarefas por prioridade →". Posição: fim do formulário y=354, box y=370–449 (entre o formulário e a lista). |
+| 2 | Box leva para Analytics | ✅ | Clique → `http://localhost:3001/analytics`. |
+| 3 | Gráfico por prioridade (shadcn/ui) com contagens da API | ✅ | `[data-slot="chart"]` presente; eixo X "Importantes" e "Não importantes". `/api/tarefas` (`{ data: [...] }`): `importante=true` 3, `false` 2. Gráfico: topo de "Importantes" em y=241 (tick "3" em y=240) e de "Não importantes" em y=291 (tick "2" em y=291); alturas 151,5px / 101px (3:2) → `3/2`. |
+| 4 | Gráfico reflete mudanças | ✅ | Criada pela home "QA 009 revalidacao" (`15f72000-…`, `importante=true`) → API `4/2`, gráfico `4/2`; excluída → API `3/2`, gráfico `3/2`. |
+| 5 | Sem tarefas | ✅ | `/api/tarefas` interceptada (`page.route`) com `{ data: [] }` → "Não há tarefas para exibir 📊 Cadastre tarefas na tela inicial para ver o gráfico.", 0 barras, sem erros. Nenhum dado real apagado. |
+| 6 | Voltar para a home | ✅ | "← Voltar" → `http://localhost:3001/`, `.add-form` presente. |
+| 7 | Sem mudança no backend | ✅ | `git diff ia-main --stat -- api database config` vazio; `git diff ia-main --stat` só lista `client/` e a própria task. Cadastro/listagem/exclusão funcionando (item 4). |
+
+**Erros de JavaScript:** nenhum (`pageerror` e `console.error` vazios em todos os fluxos).
+
+**Testes unitários:** `npm test` → `Test Suites: 2 passed, 2 total` / `Tests: 16 passed, 16 total`.
+
+**Dados de teste:** apenas "QA 009 revalidacao" (`15f72000-e608-11f1-a430-5138db05a659`) foi criada e removida em seguida (confirmado: não aparece mais em `/api/tarefas`, contagens voltaram a `3/2`). "Limpar tudo" não foi usado; containers mantidos em execução.
 
 ## Bugs
 
