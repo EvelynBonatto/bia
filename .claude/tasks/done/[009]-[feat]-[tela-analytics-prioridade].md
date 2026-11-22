@@ -60,7 +60,7 @@ Como **usuário da BIA**, quero **ver um gráfico com a quantidade de tarefas po
 
 ## Status
 
-validada pelo QA
+aceita
 
 ---
 
@@ -171,17 +171,30 @@ Nenhum bug encontrado.
 
 ## Finalização (PO)
 
-- [ ] Verificar se tudo foi implementado conforme o escopo técnico
-- [ ] Verificar se todos os itens do checklist foram marcados como concluídos
-- [ ] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
-- [ ] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
-- [ ] Confirmar que a aplicação está buildando e funcionando corretamente
+- [x] Verificar se tudo foi implementado conforme o escopo técnico
+- [x] Verificar se todos os itens do checklist foram marcados como concluídos
+- [x] Confirmar que o status da task é `validada pelo QA` (se estiver `com bugs`, devolver ao agent responsável)
+- [x] Verificar cada critério de aceite (✅/❌ com evidência); se algum falhar, mudar o status para `recusada` com o motivo e devolver ao agent responsável (a task continua em `doing/`)
+- [x] Confirmar que a aplicação está buildando e funcionando corretamente
 - [ ] Se tudo estiver ok:
-  - [ ] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
-  - [ ] Após o OK, confirmar que o worktree está no branch `feat/009-tela-analytics-prioridade`
-  - [ ] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/`, dentro do worktree
-  - [ ] Fazer commit e push final no branch da task, dentro do worktree
+  - [x] Informar ao usuário que a task está finalizada (resumo do que foi verificado) e **aguardar o OK do usuário** para continuar
+  - [x] Após o OK, confirmar que o worktree está no branch `feat/009-tela-analytics-prioridade`
+  - [x] Mudar o status para `aceita` e mover a task para `.claude/tasks/done/`, dentro do worktree
+  - [x] Fazer commit e push final no branch da task, dentro do worktree
   - [ ] Abrir o Pull Request contra `ia-main` em `EvelynBonatto/bia` (conferir o branch imediatamente antes do `gh pr create`)
   - [ ] Fazer o merge do PR em `ia-main` com **squash**
   - [ ] Voltar para `ia-main`, atualizar, limpar referências, remover o worktree e apagar o branch local
   - [ ] Enviar ao usuário o link do PR e o commit do merge
+
+**Aceite do PO:**
+
+| # | Critério | Resultado | Evidência |
+|---|----------|-----------|-----------|
+| 1 | Box "Ver Analytics" na home | ✅ | Revalidação QA (`ed53b60`): link "📊 Ver Analytics Visualize suas tarefas por prioridade →" entre o formulário e a lista |
+| 2 | Box leva para Analytics | ✅ | Clique → `http://localhost:3001/analytics` |
+| 3 | Gráfico de barras por prioridade (shadcn/ui) | ✅ | `[data-slot="chart"]` (chart do shadcn/ui); gráfico `3/2` = `/api/tarefas` `3/2` |
+| 4 | Gráfico reflete mudanças | ✅ | Criada → `4/2`; excluída → `3/2`, sempre igual à API |
+| 5 | Sem tarefas | ✅ | API interceptada vazia → "Não há tarefas para exibir", sem erros |
+| 6 | Voltar para a home | ✅ | "← Voltar" → `/` com o formulário presente |
+| 7 | Sem mudança no backend e no restante da home | ✅ | `git diff ia-main -- api database config` vazio; cadastro, estrela e exclusão ok; 16 testes passando |
+| — | Ajustes pedidos (cor e largura) | ✅ | "Importantes" `rgb(249,115,22)` nos dois temas; "Não importantes" na cor de destaque; barras com 90px |
