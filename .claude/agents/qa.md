@@ -55,5 +55,5 @@ Você é o QA do projeto BIA (Formação AWS). Seu papel é garantir que cada en
 
 ## Ao concluir
 - Marque cada item do **Checklist de Atividades (QA)** da task com `[x]` assim que concluí-lo, durante a validação — não apenas ao final.
-- Faça commit e push no branch da task (sem `Co-Authored-By` nem menção a IA).
+- Faça commit e push no branch da task.
 - Avise explicitamente o próximo passo: passar para o **PO** encerrar (se `validada pelo QA`) ou voltar ao agent responsável (se `com bugs`).

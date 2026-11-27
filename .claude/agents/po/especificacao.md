@@ -276,8 +276,6 @@ O corpo do PR deve conter:
 4. **Critérios de aceitação:** lista dos cenários atendidos
 5. **Validação:** confirmação do deploy local e da rota `/api/versao`
 
-> Sem rodapé de atribuição e sem menção a IA no corpo do PR.
-
 ### Comandos
 
 ```bash
@@ -328,7 +326,7 @@ git branch -D <branch-da-task>
 git worktree prune
 ```
 
-- O título do commit de squash é o título do PR (`[NNN] - <tipo>: <resumo>`), e o commit **não** deve ter `Co-Authored-By` nem menção a IA.
+- O título do commit de squash é o título do PR (`[NNN] - <tipo>: <resumo>`).
 - Se o merge falhar (conflito, checks pendentes ou bloqueio do GitHub), **não** usar `--admin` nem forçar: avisar o usuário com a mensagem de erro.
 - Ao final, informar ao usuário o link do PR e o commit do merge. As próximas tasks partem desse `ia-main` atualizado.
 
@@ -343,7 +341,6 @@ O histórico no GitHub deve conter apenas commits com **valor real**. Commits bo
 - **Única exceção:** o commit de início da task (mover para `doing/` + `sequencial.md`, passo 3 do **Fluxo do agent responsável**) é feito direto no `ia-main` pelo agent responsável. Nenhum outro commit vai direto no `ia-main`
 - O título do commit de squash deve seguir o título do PR: `[NNN] - <tipo>: <resumo>`
 - O merge é feito pelo PO após o OK do aceite: `gh pr merge <numero> --repo EvelynBonatto/bia --squash --delete-branch`. O repositório só permite squash (Settings → Pull Requests).
-- **Nenhum** commit (de nenhum agent) leva a linha `Co-Authored-By` nem menção a IA.
 
 ### O que NÃO commitar
 
